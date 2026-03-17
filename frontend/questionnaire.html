@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Questionnaire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <main class="simple-page-wrap questionnaire-wrap">
+    <section class="simple-card questionnaire-card">
+      <div class="section-eyebrow">Project Intake</div>
+      <h1 class="section-title simple-title">Landscape design questionnaire</h1>
+      <p class="simple-copy">Tell us about your yard, your style, and your priorities. This first pass stores the written intake. Photo upload can be added next.</p>
+
+      <form id="questionnaireForm" class="questionnaire-form">
+        <div class="checkout-row">
+          <label for="address">Project address</label>
+          <input id="address" type="text" placeholder="123 Green St, Wilmette, IL" />
+        </div>
+
+        <div class="checkout-row">
+          <label for="yardSize">Yard size / scope</label>
+          <input id="yardSize" type="text" placeholder="Front yard only, approx. 40' wide" />
+        </div>
+
+        <div class="checkout-row">
+          <label for="style">Preferred style</label>
+          <textarea id="style" rows="4" placeholder="Classic, naturalistic, modern, colorful, low-maintenance..."></textarea>
+        </div>
+
+        <div class="checkout-row">
+          <label for="sunShade">Sun / shade notes</label>
+          <textarea id="sunShade" rows="4" placeholder="Morning sun, shady under mature maple, dry foundation bed..."></textarea>
+        </div>
+
+        <div class="checkout-row">
+          <label for="budget">Budget notes</label>
+          <textarea id="budget" rows="4" placeholder="Any nursery budget range or phasing preferences"></textarea>
+        </div>
+
+        <div class="checkout-row">
+          <label for="mustKeep">Plants or features to keep</label>
+          <textarea id="mustKeep" rows="4" placeholder="Existing boxwoods, front walk, mailbox bed, etc."></textarea>
+        </div>
+
+        <div class="checkout-row">
+          <label for="inspo">Inspiration links / notes</label>
+          <textarea id="inspo" rows="4" placeholder="Pinterest links, favorite plants, neighboring yards you love..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary simple-link-btn questionnaire-submit">Submit questionnaire</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/app-config.js"></script>
+  <script>
+    const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.apiBase) || 'https://YOUR-BACKEND.onrender.com';
+
+    document.getElementById('questionnaireForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) {
+        alert('Missing questionnaire token.');
+        return;
+      }
+
+      const payload = {
+        token,
+        address: document.getElementById('address').value.trim(),
+        yard_size: document.getElementById('yardSize').value.trim(),
+        style_preferences: document.getElementById('style').value.trim(),
+        sun_shade: document.getElementById('sunShade').value.trim(),
+        budget_notes: document.getElementById('budget').value.trim(),
+        must_keep: document.getElementById('mustKeep').value.trim(),
+        inspiration_notes: document.getElementById('inspo').value.trim()
+      };
+
+      const btn = document.querySelector('.questionnaire-submit');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch(API_BASE + '/questionnaire-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || 'Unable to submit questionnaire.');
+        }
+
+        alert('Questionnaire submitted successfully.');
+        window.location.href = 'index.html';
+      } catch (err) {
+        alert(err.message || 'Unable to submit questionnaire.');
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  </script>
+</body>
+</html>
