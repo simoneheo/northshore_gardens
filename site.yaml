@@ -1,0 +1,36 @@
+hero:
+  eyebrow: Front yard design for North Shore homes
+  title: A better front yard starts with a few photos.
+  subtext: Send a few yard photos and answer a couple quick questions. We'll personally review your space and respond with thoughtful design ideas before you decide whether to move forward.
+  cta:
+    primary: Get Quick Ideas
+    secondary: View Examples
+  points:
+    - Low pressure
+    - No meetings required
+    - Zone 5b aware
+
+contact:
+  title: Thinking about your yard?
+  body: Send a quick note or a photo of your yard and we'll respond with a few thoughtful ideas.
+  trust: No sales pressure. No spam.
+  form:
+    message_label: What are you thinking about for your yard?
+    email_label: Where should we send our response?
+    upload_label: Add a photo (optional)
+    submit_label: Send Message
+  success:
+    title: Thanks - we'll take a look and respond by email.
+    body: If you included a photo, that helps us give more specific ideas.
+
+gallery:
+  title: Curated transformations that build trust fast.
+  intro: A few stronger examples do more than a crowded gallery. These are here to show range, restraint, and the kind of clarity homeowners are actually looking for.
+
+navigation:
+  links:
+    gallery: Gallery
+    how_it_works: How It Works
+    why_us: Why Us
+    packages: Packages
+  cta: Get Started

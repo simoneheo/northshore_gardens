@@ -1,0 +1,4 @@
+{
+  "subject": "We received your intake",
+  "html": "<p>Hi {client_name},</p>\n<p>Thanks for sending your yard details and photos.</p>\n<p>We received your quick ideas intake and will follow up shortly with thoughtful next steps.</p>\n{reference_line}\n<p>Thanks,<br>Northshore Gardens Studio</p>"
+}

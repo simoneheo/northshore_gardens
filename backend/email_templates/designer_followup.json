@@ -1,0 +1,4 @@
+{
+  "subject": "{subject}",
+  "html": "<p>Hi {client_name},</p>\n{html_body}\n{design_btn}\n{build_btn}\n<p>Thanks,<br>Northshore Gardens Studio</p>"
+}

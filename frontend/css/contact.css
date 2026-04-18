@@ -1,0 +1,83 @@
+.contact-page {
+  background: linear-gradient(180deg, #fbfaf6 0%, #f6f1e8 100%);
+  min-height: 100vh;
+}
+
+.contact-hero {
+  padding: 56px 0 24px;
+}
+
+.contact-shell {
+  padding-bottom: 90px;
+}
+
+.contact-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(90, 107, 74, 0.12);
+  box-shadow: var(--shadow);
+  padding: 30px;
+}
+
+.contact-lead {
+  color: var(--text-muted);
+  margin-top: 14px;
+}
+
+.contact-form {
+  margin-top: 26px;
+  display: grid;
+  gap: 16px;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+
+.contact-form .text-input,
+.contact-form .text-area,
+.contact-form .attachment-input {
+  border-radius: 16px;
+  border: 1px solid rgba(90, 107, 74, 0.16);
+  background: #fff;
+  width: 100%;
+}
+
+.contact-form .text-input,
+.contact-form .text-area {
+  padding: 14px 16px;
+}
+
+.contact-form .text-area {
+  min-height: 170px;
+  resize: vertical;
+}
+
+.attachment-input {
+  padding: 12px;
+}
+
+.attachment-hint {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.contact-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+
+.contact-success {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(90, 107, 74, 0.08);
+  border: 1px solid rgba(90, 107, 74, 0.18);
+  color: var(--sage-dark);
+}

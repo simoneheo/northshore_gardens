@@ -1,0 +1,4 @@
+{
+  "subject": "New contact message - {name}",
+  "html": "<h2>New contact submission</h2>\n<p><strong>Submitted:</strong> {submitted_at_utc} UTC</p>\n<p><strong>Name:</strong> {name}<br>\n<strong>Email:</strong> {email}</p>\n<p><strong>Message:</strong></p>\n<p>{message}</p>\n<p><strong>Attachments:</strong></p>\n<ul>{attachment_items}</ul>"
+}

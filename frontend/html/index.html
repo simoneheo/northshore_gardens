@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Northshore Gardens — Front Yard Design from Photos</title>
+  <meta name="description" content="A premium intake-first homepage for Northshore Gardens. Homeowners send photos, receive thoughtful design ideas personally, and choose a package later if it feels right." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/header.css" />
+  <link rel="stylesheet" href="../css/hero.css" />
+  <link rel="stylesheet" href="../css/gallery.css" />
+  <link rel="stylesheet" href="../css/how-it-works.css" />
+  <link rel="stylesheet" href="../css/difference.css" />
+  <link rel="stylesheet" href="../css/packages.css" />
+  <link rel="stylesheet" href="../css/final-cta-footer.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body class="homepage">
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="#top" aria-label="Northshore Gardens home">
+        <img src="../assets/brand/logo.png" alt="Northshore Gardens logo" />
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav id="siteNav" class="site-nav">
+        <a href="#gallery" data-edit="navGallery">Gallery</a>
+        <a href="#how-it-works" data-edit="navHowItWorks">How It Works</a>
+        <a href="#difference" data-edit="navWhyUs">Why Us</a>
+        <a href="#packages" data-edit="navPackages">Packages</a>
+        <a
+          class="button button-sm"
+          href="./intake.html"
+          data-edit="navCta"
+          data-intake-entry-intent="get_started"
+          data-intake-source-page="header"
+        >Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <p class="eyebrow" data-edit="heroEyebrow">Front yard design for North Shore homes</p>
+          <h1 data-edit="heroTitle">A better front yard starts with a few photos.</h1>
+          <p class="hero-subtext" data-edit="heroSubtext">
+            Send a few yard photos and answer a couple quick questions. We’ll personally review your space and respond with thoughtful design ideas before you decide whether to move forward.
+          </p>
+
+          <div class="hero-actions">
+            <a
+              class="button"
+              href="./intake.html"
+              data-edit="heroPrimaryCta"
+              data-intake-entry-intent="quick_ideas"
+              data-intake-source-page="hero"
+            >Get Quick Ideas</a>
+            <a class="button button-secondary" href="#gallery" data-edit="heroSecondaryCta">View Examples</a>
+          </div>
+
+          <div class="hero-points">
+            <span data-edit="heroPoint1">Low pressure</span>
+            <span data-edit="heroPoint2">No meetings required</span>
+            <span data-edit="heroPoint3">Zone 5b aware</span>
+          </div>
+        </div>
+
+        <div class="hero-proof reveal reveal-delay-1">
+          <div class="hero-proof-card">
+            <div class="proof-label-row">
+              <span data-edit="proofLabelLeft">Curated proof</span>
+              <span data-edit="proofLabelRight">Before → After</span>
+            </div>
+            <div class="hero-proof-stack">
+              <figure>
+                <img src="../assets/gallery/M5/before-800.webp" alt="Front yard before design" />
+                <figcaption data-edit="beforeCaption">Before</figcaption>
+              </figure>
+              <figure>
+                <img src="../assets/gallery/M5/after-800.webp" alt="Front yard after design" />
+                <figcaption data-edit="afterCaption">After</figcaption>
+              </figure>
+            </div>
+            <p class="proof-note" data-edit="proofNote">Thoughtful layouts, cleaner structure, and planting direction tailored to the house instead of generic templates.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="section section-cream">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow" data-edit="galleryEyebrow">Proof</p>
+          <h2 data-edit="galleryTitle">Curated transformations that build trust fast.</h2>
+          <p data-edit="galleryIntro">
+            A few stronger examples do more than a crowded gallery. These are here to show range, restraint, and the kind of clarity homeowners are actually looking for.
+          </p>
+        </div>
+
+        <div class="gallery-grid">
+          <article class="gallery-card reveal">
+            <div class="gallery-images split-2">
+              <figure>
+                <img src="../assets/gallery/M5/before-800.webp" alt="Before landscape example" />
+                <figcaption data-edit="beforeCaption">Before</figcaption>
+              </figure>
+              <figure>
+                <img src="../assets/gallery/M5/after-800.webp" alt="After landscape example" />
+                <figcaption data-edit="afterCaption">After</figcaption>
+              </figure>
+            </div>
+            <div class="gallery-copy">
+              <h3 data-edit="galleryCard1Title">Stronger structure without feeling overdone</h3>
+              <p data-edit="galleryCard1Body">Used as a trust-builder near the top of the page, not buried in a separate gallery-first experience.</p>
+            </div>
+          </article>
+
+          <article class="gallery-card reveal reveal-delay-1">
+            <div class="gallery-images split-2">
+              <figure>
+                <img src="../assets/gallery/P1/before-800.webp" alt="Before entry landscape example" />
+                <figcaption data-edit="beforeCaption">Before</figcaption>
+              </figure>
+              <figure>
+                <img src="../assets/gallery/P1/after-800.webp" alt="After entry landscape example" />
+                <figcaption data-edit="afterCaption">After</figcaption>
+              </figure>
+            </div>
+            <div class="gallery-copy">
+              <h3 data-edit="galleryCard2Title">Refined curb appeal from photos and context</h3>
+              <p data-edit="galleryCard2Body">Enough visual proof to feel credible, without overwhelming the homepage with every project at once.</p>
+            </div>
+          </article>
+
+          <article class="gallery-card reveal reveal-delay-2">
+            <div class="gallery-images split-2">
+              <figure>
+                <img src="../assets/gallery/P2/before-800.webp" alt="Before planting bed example" />
+                <figcaption data-edit="beforeCaption">Before</figcaption>
+              </figure>
+              <figure>
+                <img src="../assets/gallery/P2/after-800.webp" alt="After planting bed example" />
+                <figcaption data-edit="afterCaption">After</figcaption>
+              </figure>
+            </div>
+            <div class="gallery-copy">
+              <h3 data-edit="galleryCard3Title">Curated, calm, and easy to trust</h3>
+              <p data-edit="galleryCard3Body">The homepage proves capability first, then invites the user into a simple intake instead of pushing straight to checkout.</p>
+            </div>
+          </article>
+        </div>
+        <div class="section-cta-row reveal">
+          <a
+            class="button"
+            href="./intake.html"
+            data-intake-entry-intent="quick_ideas"
+            data-intake-source-page="gallery"
+          >Get Quick Ideas</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow" data-edit="howItWorksEyebrow">How It Works</p>
+          <h2 data-edit="howItWorksTitle">Simple enough to start in minutes.</h2>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card reveal">
+            <span class="step-number">1</span>
+            <h3 data-edit="step1Title">Send photos + answer a few questions</h3>
+            <p data-edit="step1Body">A short, conversational intake helps you share just enough context without getting pulled into a long form.</p>
+          </article>
+          <article class="step-card reveal reveal-delay-1">
+            <span class="step-number">2</span>
+            <h3 data-edit="step2Title">Receive thoughtful ideas personally</h3>
+            <p data-edit="step2Body">You hear from a real designer, not an automated checkout sequence. The first interaction feels helpful, not transactional.</p>
+          </article>
+          <article class="step-card reveal reveal-delay-2">
+            <span class="step-number">3</span>
+            <h3 data-edit="step3Title">Choose a package if you want to move forward</h3>
+            <p data-edit="step3Body">Packages still exist, but they are no longer the forced first action. The relationship starts with trust.</p>
+          </article>
+        </div>
+        <div class="section-cta-row reveal">
+          <a
+            class="button"
+            href="./intake.html"
+            data-intake-entry-intent="quick_ideas"
+            data-intake-source-page="how_it_works"
+          >Get Quick Ideas</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="difference" class="section section-soft">
+      <div class="container difference-grid">
+        <div class="difference-copy reveal">
+          <p class="eyebrow" data-edit="whyEyebrow">Why This Is Different</p>
+          <h2 data-edit="whyTitle">A refined online design product, not a contractor funnel.</h2>
+          <p data-edit="whyBody">
+            The experience is designed to feel calm, thoughtful, and low-pressure from the first click. Homeowners get useful direction first. Packages come later.
+          </p>
+        </div>
+
+        <div class="difference-list reveal reveal-delay-1">
+          <div class="difference-item"><strong data-edit="diff1Title">No contractor upsells</strong><span data-edit="diff1Body">Use your own installer, nursery, or timeline.</span></div>
+          <div class="difference-item"><strong data-edit="diff2Title">No pressure</strong><span data-edit="diff2Body">The initial step is simply to get thoughtful ideas.</span></div>
+          <div class="difference-item"><strong data-edit="diff3Title">No meetings required</strong><span data-edit="diff3Body">The flow is built around photos and a short intake.</span></div>
+          <div class="difference-item"><strong data-edit="diff4Title">Flat-fee design</strong><span data-edit="diff4Body">Clear productized service once they choose to continue.</span></div>
+          <div class="difference-item"><strong data-edit="diff5Title">North Shore / Zone 5b expertise</strong><span data-edit="diff5Body">Local conditions and neighborhood fit are part of the value.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="packages" class="section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow" data-edit="packagesEyebrow">Packages</p>
+          <h2 data-edit="packagesTitle">Still available. Just no longer the first forced step.</h2>
+          <p data-edit="packagesIntro">
+            Once a homeowner has seen your style and heard from you personally, these become the natural next step instead of the entry point.
+          </p>
+        </div>
+
+        <div class="packages-grid">
+          <article class="package-card reveal">
+            <div class="package-top">
+              <p class="package-label" data-edit="package1Label">Signature Plan</p>
+              <span class="package-badge" data-edit="package1Badge">Most straightforward</span>
+            </div>
+            <h3 data-edit="package1Title">Fast, polished design direction.</h3>
+            <ul>
+              <li data-edit="package1Item1">Before / after design direction</li>
+              <li data-edit="package1Item2">Plan view and plant names</li>
+              <li data-edit="package1Item3">Plant sheet and quantities</li>
+              <li data-edit="package1Item4">Delivered within 7 days</li>
+              <li data-edit="package1Item5">No revision</li>
+            </ul>
+            <p class="package-note" data-edit="package1Note">Available after your initial ideas.</p>
+          </article>
+
+          <article class="package-card package-card-featured reveal reveal-delay-1">
+            <div class="package-top">
+              <p class="package-label" data-edit="package2Label">Premium Plan</p>
+              <span class="package-badge" data-edit="package2Badge">For more guidance</span>
+            </div>
+            <h3 data-edit="package2Title">Everything in the Signature Plan, plus clearer execution help.</h3>
+            <ul>
+              <li data-edit="package2Item1">1 revision included</li>
+              <li data-edit="package2Item2">Plant spacing and sizing guidance</li>
+              <li data-edit="package2Item3">Substitution options</li>
+              <li data-edit="package2Item4">Installation steps and phasing direction</li>
+              <li data-edit="package2Item5">More contractor-ready detail</li>
+            </ul>
+            <p class="package-note" data-edit="package2Note">Presented as the next step, not a paywall.</p>
+          </article>
+        </div>
+        <div class="section-cta-row reveal">
+          <a
+            class="button"
+            href="./intake.html"
+            data-intake-entry-intent="get_started"
+            data-intake-source-page="packages"
+          >Get Started</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section final-cta-section">
+      <div class="container">
+        <div class="final-cta reveal">
+          <div>
+            <p class="eyebrow" data-edit="finalCtaEyebrow">Thinking about your yard?</p>
+            <h2 data-edit="finalCtaTitle">Send a photo and get a thoughtful first response.</h2>
+            <p data-edit="finalCtaBody">
+              A quick phone photo is enough to start. No sales pressure. No spam. Just a clearer sense of what your yard could become.
+            </p>
+          </div>
+          <div class="final-cta-actions">
+            <a
+              class="button"
+              href="./intake.html"
+              data-edit="finalCtaButton"
+              data-intake-entry-intent="quick_ideas"
+              data-intake-source-page="final_cta"
+            >Get Quick Ideas</a>
+            <p class="microcopy" data-edit="finalCtaMicrocopy">You review the ideas first. Purchase only if it feels right.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <img class="footer-logo" src="../assets/brand/logo.png" alt="Northshore Gardens logo" />
+      <p data-edit="footerTagline">Landscape Design · North Shore, Illinois · Zone 5b</p>
+      <a href="mailto:hello@northshoregardens.studio">hello@northshoregardens.studio</a>
+    </div>
+  </footer>
+
+  <script src="../js/app-config.js"></script>
+  <script src="../js/lead-intent.js"></script>
+  <script src="../js/site-data.js"></script>
+  <script src="../js/render.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

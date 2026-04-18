@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Northshore Gardens — Contact</title>
+  <meta name="description" content="Send a message to Northshore Gardens Studio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/header.css" />
+  <link rel="stylesheet" href="../css/final-cta-footer.css" />
+  <link rel="stylesheet" href="../css/contact.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+</head>
+<body class="contact-page">
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="./index.html" aria-label="Northshore Gardens home">
+        <img src="../assets/brand/logo.png" alt="Northshore Gardens logo" />
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav id="siteNav" class="site-nav">
+        <a href="./index.html#gallery" data-edit="navGallery">Gallery</a>
+        <a href="./index.html#how-it-works" data-edit="navHowItWorks">How It Works</a>
+        <a href="./index.html#difference" data-edit="navWhyUs">Why Us</a>
+        <a href="./index.html#packages" data-edit="navPackages">Packages</a>
+        <a
+          class="button button-sm"
+          href="./intake.html"
+          data-edit="navCta"
+          data-intake-entry-intent="get_started"
+          data-intake-source-page="header"
+        >Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="contact-hero">
+      <div class="container">
+        <p class="eyebrow reveal" data-edit="contactEyebrow">Contact Us</p>
+        <h1 class="reveal reveal-delay-1" data-edit="contactTitle">Tell us what you are thinking about.</h1>
+        <p class="contact-lead reveal reveal-delay-2" data-edit="contactIntro">Share your questions, project goals, and any helpful photos. We usually reply within one business day.</p>
+      </div>
+    </section>
+
+    <section class="contact-shell">
+      <div class="container">
+        <article class="contact-card reveal">
+          <form id="contactForm" class="contact-form">
+            <label>
+              <span data-edit="contactNameLabel">Name</span>
+              <input class="text-input" type="text" id="contactName" name="name" required />
+            </label>
+            <label>
+              <span data-edit="contactEmailLabel">Email</span>
+              <input class="text-input" type="email" id="contactEmail" name="email" required />
+            </label>
+            <label>
+              <span data-edit="contactMessageLabel">Message</span>
+              <textarea class="text-area" id="contactMessage" name="message" required></textarea>
+            </label>
+            <label>
+              <span data-edit="contactAttachmentLabel">Attachments (optional)</span>
+              <input class="attachment-input" type="file" id="contactAttachments" name="attachments" accept="image/*" multiple />
+              <span class="attachment-hint" data-edit="contactAttachmentHint">You can attach up to 5 images.</span>
+            </label>
+            <div class="contact-actions">
+              <button type="submit" class="button" id="contactSubmit" data-edit="contactSubmitButton">Send Message</button>
+            </div>
+            <div id="contactStatus" aria-live="polite"></div>
+          </form>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <img class="footer-logo" src="../assets/brand/logo.png" alt="Northshore Gardens logo" />
+      <p data-edit="footerTagline">Landscape Design · North Shore, Illinois · Zone 5b</p>
+      <a href="mailto:hello@northshoregardens.studio">hello@northshoregardens.studio</a>
+    </div>
+  </footer>
+
+  <script src="../js/app-config.js"></script>
+  <script src="../js/lead-intent.js"></script>
+  <script src="../js/site-data.js"></script>
+  <script src="../js/render.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

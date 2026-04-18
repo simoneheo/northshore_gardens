@@ -1,0 +1,68 @@
+.plans-page {
+  background: linear-gradient(180deg, #fbfaf6 0%, #f6f1e8 100%);
+  min-height: 100vh;
+}
+
+.plans-hero {
+  padding: 56px 0 24px;
+}
+
+.plans-shell {
+  padding-bottom: 90px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.plan-card {
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(90, 107, 74, 0.12);
+  box-shadow: var(--shadow);
+  padding: 26px;
+  display: grid;
+  gap: 12px;
+}
+
+.plan-card h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+}
+
+.plan-lead {
+  color: var(--text-muted);
+  margin-top: 14px;
+}
+
+.plan-features {
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+  color: var(--text-muted);
+}
+
+.plan-features li {
+  margin-top: 8px;
+}
+
+.plans-actions {
+  margin-top: 8px;
+  display: flex;
+}
+
+.plans-status {
+  margin-top: 18px;
+}
+
+.plans-note {
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+}

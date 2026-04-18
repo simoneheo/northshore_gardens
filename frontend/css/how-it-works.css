@@ -1,0 +1,25 @@
+.steps-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(3, 1fr);
+}
+.step-card {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid rgba(90,107,74,0.08);
+}
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(90,107,74,0.1);
+  color: var(--sage-dark);
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.step-card h3 { font-size: 1.62rem; }
+.step-card p { margin-top: 12px; color: var(--text-muted); }

@@ -1,0 +1,31 @@
+.checkout-page {
+  background: linear-gradient(180deg, #fbfaf6 0%, #f6f1e8 100%);
+  min-height: 100vh;
+}
+
+.checkout-shell {
+  padding: 64px 0 90px;
+}
+
+.checkout-card {
+  max-width: 760px;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(90, 107, 74, 0.12);
+  box-shadow: var(--shadow);
+  padding: 34px;
+  display: grid;
+  gap: 14px;
+}
+
+.checkout-copy {
+  color: var(--text-muted);
+}
+
+.checkout-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}

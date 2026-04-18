@@ -1,0 +1,4 @@
+{
+  "subject": "Payment received - {client_name} ({package_name})",
+  "html": "<h2>Payment received</h2>\n<p><strong>Purchased:</strong> {purchased_at_utc} UTC</p>\n<p><strong>Client:</strong> {client_name}<br>\n<strong>Email:</strong> {client_email}</p>\n<p><strong>Reference:</strong> {reference}<br>\n<strong>Public token:</strong> {public_token}</p>\n<p><strong>Package:</strong> {package_name}<br>\n<strong>Amount:</strong> {amount_display}<br>\n<strong>Currency:</strong> {currency}<br>\n<strong>Payment status:</strong> {payment_status}</p>\n<p><strong>Stripe session:</strong> {stripe_session_id}</p>"
+}
