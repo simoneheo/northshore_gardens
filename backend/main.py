@@ -379,14 +379,6 @@ def sample_email_template_context(template_name: str) -> dict[str, Any]:
         }
     if template_name == "client_contact_confirmation":
         return {"name": "Jane"}
-    if template_name == "designer_followup":
-        return {
-            "subject": "A few ideas for your garden",
-            "client_name": "Jane",
-            "html_body": "<p>Thanks for your intake. Here are a couple of directions we recommend.</p>",
-            "design_btn": '<p><a href="https://example.com/plans?lead=demoToken123&package=signature_plan">Signature Plan</a></p>',
-            "build_btn": '<p><a href="https://example.com/plans?lead=demoToken123&package=premium_plan">Premium Plan</a></p>',
-        }
     if template_name == "admin_payment_confirmation":
         return {
             "client_name": "Jane Doe",

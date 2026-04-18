@@ -17,7 +17,6 @@ Use `{placeholder_name}` values in both fields. Placeholders are filled in by `m
 - `client_intake_confirmation`
 - `admin_contact_notification`
 - `client_contact_confirmation`
-- `designer_followup`
 - `admin_payment_confirmation`
 - `client_payment_confirmation`
 
@@ -37,7 +36,6 @@ Examples:
 - `http://localhost:8001/dev/email-preview/client_intake_confirmation`
 - `http://localhost:8001/dev/email-preview/admin_contact_notification`
 - `http://localhost:8001/dev/email-preview/client_contact_confirmation`
-- `http://localhost:8001/dev/email-preview/designer_followup`
 - `http://localhost:8001/dev/email-preview/admin_payment_confirmation`
 - `http://localhost:8001/dev/email-preview/client_payment_confirmation`
 

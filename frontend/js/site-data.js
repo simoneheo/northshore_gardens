@@ -76,7 +76,7 @@ window.SITE_DATA = {
   "finalCtaBody": "A quick phone photo is enough to start. No sales pressure. No spam. Just a clearer sense of what your yard could become.",
   "finalCtaButton": "Get Quick Ideas",
   "finalCtaMicrocopy": "You review the ideas first. Purchase only if it feels right.",
-  "footerTagline": "Landscape Design - North Shore, Illinois - Zone 5b",
+  "footerTagline": "Landscape Design - Northbrook, Illinois",
   "contactEyebrow": "Contact Us",
   "contactTitle": "Tell us what you are thinking about.",
   "contactIntro": "Share your questions, project goals, and any helpful photos. We usually reply within one business day.",

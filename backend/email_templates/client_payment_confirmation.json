@@ -1,4 +1,4 @@
 {
   "subject": "Payment confirmed: {package_name}",
-  "html": "<p>Hi {client_name},</p>\n<p>Thanks for your purchase. Your payment is confirmed.</p>\n<p><strong>Package:</strong> {package_name}<br>\n<strong>Amount:</strong> {amount_display}<br>\n<strong>Reference:</strong> {reference}</p>\n<p>We will follow up with next steps shortly.</p>\n<p>Thanks,<br>Northshore Gardens Studio</p>"
+  "html": "<p>Dear {client_name},</p>\n<p>Thank you for your purchase. Your payment has been received.</p>\n<p><strong>Package:</strong> {package_name}<br>\n<strong>Amount:</strong> {amount_display}<br>\n<strong>Reference:</strong> {reference}</p>\n<p>Please feel free to reply to this email with any questions or inputs.</p>\n<p>Warm regards,<br>Northshore Gardens Studio</p>"
 }
