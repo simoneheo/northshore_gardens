@@ -1058,6 +1058,17 @@ def shutdown() -> None:
         db_pool = None
 
 
+@app.get("/")
+def root() -> dict[str, Any]:
+    """Public API root (e.g. opening the Render URL in a browser). The site is on FRONTEND_URL."""
+    return {
+        "service": "Northshore Gardens API",
+        "ok": True,
+        "frontend": FRONTEND_URL or None,
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, bool]:
     return {"ok": True}
@@ -1477,7 +1488,7 @@ def create_plans_page_link(public_token: str) -> str:
     token = (public_token or "").strip()
     if not token:
         raise HTTPException(status_code=400, detail="public_token is required.")
-    return f"{FRONTEND_URL}/html/plans.html?lead={token}"
+    return f"{FRONTEND_URL}/plans.html?lead={token}"
 
 
 def create_checkout_url_for_intake(public_token: str, package_id: str) -> str:
@@ -1505,10 +1516,10 @@ def create_checkout_url_for_intake(public_token: str, package_id: str) -> str:
                 }
             ],
             success_url=(
-                f"{FRONTEND_URL}/html/checkout_success.html?lead={token}"
+                f"{FRONTEND_URL}/checkout_success.html?lead={token}"
                 "&session_id={CHECKOUT_SESSION_ID}"
             ),
-            cancel_url=f"{FRONTEND_URL}/html/checkout_cancel.html?lead={token}",
+            cancel_url=f"{FRONTEND_URL}/checkout_cancel.html?lead={token}",
             metadata={
                 "public_token": token,
                 "package_id": normalized_package,
