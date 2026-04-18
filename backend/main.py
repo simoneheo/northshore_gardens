@@ -15,7 +15,7 @@ import stripe
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
@@ -1769,6 +1769,12 @@ async function uploadAdminPhoto(){{
 }}
 </script>
 </body></html>"""
+
+
+@app.get("/admin")
+def admin_root_redirect() -> RedirectResponse:
+    """So https://…/admin and https://…/admin/ land on the leads list (used via studio proxy or direct on Render)."""
+    return RedirectResponse(url="/admin/leads", status_code=302)
 
 
 @app.get("/admin/leads", response_class=HTMLResponse)

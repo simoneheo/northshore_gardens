@@ -1,7 +1,13 @@
 {
-    "name": "northshore-gardens",
-    "compatibility_date": "2026-03-17",
-    "assets": {
-      "directory": "./frontend"
-    }
+  "name": "northshore-gardens",
+  "main": "worker.js",
+  "compatibility_date": "2026-03-17",
+  "vars": {
+    "API_ORIGIN": "https://northshore-gardens.onrender.com"
+  },
+  "assets": {
+    "directory": "./frontend",
+    "binding": "ASSETS",
+    "run_worker_first": true
   }
+}
