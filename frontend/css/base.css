@@ -214,3 +214,36 @@ p { margin: 0; }
 .floating-contact[data-open="false"] .floating-contact-panel {
   display: none;
 }
+
+/* Brand lockup: mark + wordmark (navbar, intake aside, etc.) */
+.brand.nav-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.22em;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(0.95rem, 1.35vw, 1.14rem);
+  line-height: 1.12;
+}
+.nav-logo .logo-main {
+  color: var(--sage-dark);
+  font-style: normal;
+  font-weight: 500;
+}
+.nav-logo .logo-accent {
+  color: var(--earth);
+  font-style: italic;
+  font-weight: 500;
+}
+.nav-logo .logo-studio {
+  color: var(--sage-dark);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
+}

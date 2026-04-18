@@ -13,8 +13,16 @@
   min-height: 78px;
   gap: 24px;
 }
-.brand img,
-.footer-logo { height: 48px; width: auto; }
+.brand .brand-mark {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.footer-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
 .site-nav {
   display: flex;
   align-items: center;

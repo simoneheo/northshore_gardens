@@ -40,5 +40,8 @@ window.SITE_DATA = {
       "packages": "Packages"
     },
     "cta": "Get Started"
-  }
+  },
+  "logoTextMain": "Northshore",
+  "logoTextAccent": "Gardens",
+  "logoTextStudio": "Studio"
 };

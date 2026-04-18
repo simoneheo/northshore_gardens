@@ -14,9 +14,28 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.brand-on-dark img {
-  height: 50px;
+.brand-on-dark .brand-mark {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
   filter: brightness(1.15) saturate(0.92);
+}
+.brand-on-dark .logo-main {
+  color: rgba(255, 255, 255, 0.96);
+  font-style: normal;
+  font-weight: 500;
+}
+.brand-on-dark .logo-accent {
+  color: var(--earth-light);
+  font-style: italic;
+  font-weight: 500;
+}
+.brand-on-dark .logo-studio {
+  color: rgba(255, 255, 255, 0.85);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
 }
 .intake-aside-copy {
   max-width: 520px;
