@@ -2050,10 +2050,15 @@ async def stripe_webhook(request: Request) -> dict[str, bool]:
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Invalid webhook signature: {exc}") from exc
 
-    if event.get("type") != "checkout.session.completed":
+    event_type = _checkout_session_field(event, "type")
+    if event_type != "checkout.session.completed":
         return {"ok": True}
 
-    session = event.get("data", {}).get("object", {}) or {}
+    event_data = _checkout_session_field(event, "data") or {}
+    if isinstance(event_data, dict):
+        session = event_data.get("object", {}) or {}
+    else:
+        session = _checkout_session_field(event_data, "object") or {}
     public_token, package_id_raw = public_token_and_package_from_checkout_session(session)
     if not public_token or not package_id_raw:
         cref = session.get("client_reference_id") if isinstance(session, dict) else None
