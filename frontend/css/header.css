@@ -10,12 +10,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 78px;
+  min-height: 88px;
   gap: 24px;
 }
 .brand .brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 .footer-logo {
@@ -30,13 +30,18 @@
 }
 .site-nav a {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 .site-nav a:hover { color: var(--sage-dark); }
 .site-nav a.button,
 .site-nav a.button:hover {
   color: #fff;
+}
+.site-nav .button-sm {
+  min-height: 46px;
+  font-size: 15px;
+  padding: 0 20px;
 }
 .nav-toggle {
   display: none;

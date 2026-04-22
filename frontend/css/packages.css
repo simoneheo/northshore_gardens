@@ -9,16 +9,19 @@
   background: #fff;
   border: 1px solid rgba(90,107,74,0.08);
 }
-.package-card-featured {
-  background: linear-gradient(180deg, rgba(245,240,232,0.75) 0%, #fff 100%);
-}
 .package-label {
   margin: 0;
   text-transform: none;
   letter-spacing: 0.04em;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--earth);
+}
+.package-price {
+  margin: 10px 0 0;
+  color: var(--sage-dark);
+  font-size: 1.35rem;
+  font-weight: 700;
 }
 .package-subtitle {
   margin: 8px 0 0;

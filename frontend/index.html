@@ -79,6 +79,7 @@
               data-intake-source-page="hero"
             >Get Quick Ideas</a>
             <a class="button button-secondary" href="#gallery" data-edit="heroSecondaryCta">View Examples</a>
+            <a class="button button-ghost" href="#packages" data-edit="heroTertiaryCta">Packages</a>
           </div>
 
         </div>
@@ -95,66 +96,18 @@
           </p>
         </div>
 
-        <div class="gallery-grid">
-          <article class="gallery-card reveal">
-            <div class="gallery-images split-2">
-              <figure>
-                <img src="/assets/gallery/M5/before-800.webp" alt="Before landscape example" />
-                <figcaption data-edit="beforeCaption">Before</figcaption>
-              </figure>
-              <figure>
-                <img src="/assets/gallery/M5/after-800.webp" alt="After landscape example" />
-                <figcaption data-edit="afterCaption">After</figcaption>
-              </figure>
-            </div>
-            <div class="gallery-copy">
-              <div class="gallery-tags" aria-label="Project tags">
-                <span class="gallery-tag">Low maintenance</span>
-                <span class="gallery-tag">Low budget</span>
-                <span class="gallery-tag">Partial sun</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="gallery-card reveal reveal-delay-1">
-            <div class="gallery-images split-2">
-              <figure>
-                <img src="/assets/gallery/P1/before-800.webp" alt="Before entry landscape example" />
-                <figcaption data-edit="beforeCaption">Before</figcaption>
-              </figure>
-              <figure>
-                <img src="/assets/gallery/P1/after-800.webp" alt="After entry landscape example" />
-                <figcaption data-edit="afterCaption">After</figcaption>
-              </figure>
-            </div>
-            <div class="gallery-copy">
-              <div class="gallery-tags" aria-label="Project tags">
-                <span class="gallery-tag">Low maintenance</span>
-                <span class="gallery-tag">Low budget</span>
-                <span class="gallery-tag">Partial sun</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="gallery-card reveal reveal-delay-2">
-            <div class="gallery-images split-2">
-              <figure>
-                <img src="/assets/gallery/P2/before-800.webp" alt="Before planting bed example" />
-                <figcaption data-edit="beforeCaption">Before</figcaption>
-              </figure>
-              <figure>
-                <img src="/assets/gallery/P2/after-800.webp" alt="After planting bed example" />
-                <figcaption data-edit="afterCaption">After</figcaption>
-              </figure>
-            </div>
-            <div class="gallery-copy">
-              <div class="gallery-tags" aria-label="Project tags">
-                <span class="gallery-tag">Low maintenance</span>
-                <span class="gallery-tag">Low budget</span>
-                <span class="gallery-tag">Partial sun</span>
-              </div>
-            </div>
-          </article>
+        <div id="galleryGrid" class="gallery-grid"></div>
+        <div class="gallery-more" id="galleryMore" hidden>
+          <div id="galleryGridMore" class="gallery-grid gallery-grid-more" hidden></div>
+          <button
+            type="button"
+            class="gallery-more-toggle"
+            id="galleryMoreToggle"
+            aria-expanded="false"
+            aria-controls="galleryGridMore"
+          >
+            Show more
+          </button>
         </div>
       </div>
     </section>
@@ -169,19 +122,32 @@
 
         <div class="steps-grid">
           <article class="step-card reveal">
-            <span class="step-number">1</span>
-            <h3 data-edit="step1Title">Send photos + answer a few questions</h3>
+            <div class="step-heading">
+              <span class="step-number">1</span>
+              <h3 data-edit="step1Title">Send photos + answer a few questions</h3>
+            </div>
             <p data-edit="step1Body">A short, conversational intake helps you share just enough context without getting pulled into a long form.</p>
           </article>
           <article class="step-card reveal reveal-delay-1">
-            <span class="step-number">2</span>
-            <h3 data-edit="step2Title">Receive thoughtful ideas personally</h3>
+            <div class="step-heading">
+              <span class="step-number">2</span>
+              <h3 data-edit="step2Title">Receive thoughtful ideas personally</h3>
+            </div>
             <p data-edit="step2Body">You hear from a real designer, not an automated checkout sequence. The first interaction feels helpful, not transactional.</p>
           </article>
           <article class="step-card reveal reveal-delay-2">
-            <span class="step-number">3</span>
-            <h3 data-edit="step3Title">Choose a package if you want to move forward</h3>
+            <div class="step-heading">
+              <span class="step-number">3</span>
+              <h3 data-edit="step3Title">Choose a package if you want to move forward</h3>
+            </div>
             <p data-edit="step3Body">Packages still exist, but they are no longer the forced first action. The relationship starts with trust.</p>
+          </article>
+          <article class="step-card reveal reveal-delay-3">
+            <div class="step-heading">
+              <span class="step-number">4</span>
+              <h3 data-edit="step4Title">Apply your design</h3>
+            </div>
+            <p data-edit="step4Body">You receive a buildable plan you can hand off to a contractor or build yourself. We help you coordinate with a trusted installer, if needed.</p>
           </article>
         </div>
       </div>
@@ -198,11 +164,56 @@
         </div>
 
         <div class="difference-list reveal reveal-delay-1">
-          <div class="difference-item"><strong data-edit="diff1Title">No contractor upsells</strong><span data-edit="diff1Body">Use your own installer, nursery, or timeline.</span></div>
-          <div class="difference-item"><strong data-edit="diff2Title">No pressure</strong><span data-edit="diff2Body">The initial step is simply to get thoughtful ideas.</span></div>
-          <div class="difference-item"><strong data-edit="diff3Title">No meetings required</strong><span data-edit="diff3Body">The flow is built around photos and a short intake.</span></div>
-          <div class="difference-item"><strong data-edit="diff4Title">Flat-fee design</strong><span data-edit="diff4Body">Clear productized service once they choose to continue.</span></div>
-          <div class="difference-item"><strong data-edit="diff5Title">Fast turnaround</strong><span data-edit="diff5Body">Receive a detailed professional plan in under 7 days.</span></div>
+          <div class="difference-item">
+            <span class="difference-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M7 6v12"></path>
+                <path d="M21 10v8a2 2 0 0 1-2 2H7"></path>
+                <path d="m14 14-5 5"></path>
+                <path d="m9 14 5 5"></path>
+              </svg>
+            </span>
+            <div class="difference-content"><strong data-edit="diff1Title">No contractor upsells</strong><span data-edit="diff1Body">Use your own installer, nursery, or timeline.</span></div>
+          </div>
+          <div class="difference-item">
+            <span class="difference-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v1.5"></path>
+                <rect x="3" y="7.5" width="18" height="12.5" rx="2"></rect>
+                <path d="M8 12h8"></path>
+              </svg>
+            </span>
+            <div class="difference-content"><strong data-edit="diff2Title">No pressure</strong><span data-edit="diff2Body">The initial step is simply to get thoughtful ideas.</span></div>
+          </div>
+          <div class="difference-item">
+            <span class="difference-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 4v16"></path>
+                <path d="M4 12h16"></path>
+                <circle cx="12" cy="12" r="9"></circle>
+              </svg>
+            </span>
+            <div class="difference-content"><strong data-edit="diff3Title">No meetings required</strong><span data-edit="diff3Body">The flow is built around photos and a short intake.</span></div>
+          </div>
+          <div class="difference-item">
+            <span class="difference-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="3.5"></circle>
+                <path d="M5.5 19.5c1.8-3.3 4.1-4.9 6.5-4.9s4.7 1.6 6.5 4.9"></path>
+              </svg>
+            </span>
+            <div class="difference-content"><strong data-edit="diff4Title">Flat-fee design</strong><span data-edit="diff4Body">Clear productized service once they choose to continue.</span></div>
+          </div>
+          <div class="difference-item">
+            <span class="difference-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v5l3 2"></path>
+              </svg>
+            </span>
+            <div class="difference-content"><strong data-edit="diff5Title">Fast turnaround</strong><span data-edit="diff5Body">Receive a detailed professional plan in under 7 days.</span></div>
+          </div>
         </div>
       </div>
     </section>
@@ -222,6 +233,7 @@
             <p class="package-label" data-edit="package1Label">Most homeowners choose this</p>
             <h3 data-edit="package1Title">Signature Plan</h3>
             <p class="package-subtitle" data-edit="package1Subtitle">A complete, build-ready design for your yard.</p>
+            <p class="package-price" data-edit="package1Price">$50.00</p>
             <ul>
               <li data-edit="package1Item1">Custom design tailored to your home</li>
               <li data-edit="package1Item2">Top-view layout with plant names</li>
@@ -233,10 +245,11 @@
             <p class="package-note" data-edit="package1Note">Everything you need to move forward with clarity, whether you're working with a contractor or building it yourself.</p>
           </article>
 
-          <article class="package-card package-card-featured reveal reveal-delay-1">
+          <article class="package-card reveal reveal-delay-1">
             <p class="package-label" data-edit="package2Label">For more guidance</p>
             <h3 data-edit="package2Title">Premium Plan</h3>
             <p class="package-subtitle" data-edit="package2Subtitle">Everything in Signature, with added clarity and flexibility.</p>
+            <p class="package-price" data-edit="package2Price">$50.00</p>
             <ul>
               <li data-edit="package2Item1">Everything in Signature Plan</li>
               <li data-edit="package2Item2">1 revision</li>
@@ -252,6 +265,7 @@
           <a
             class="button"
             href="./intake.html"
+            data-edit="packagesCta"
             data-intake-entry-intent="get_started"
             data-intake-source-page="packages"
           >Get Started</a>

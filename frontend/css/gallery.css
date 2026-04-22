@@ -1,12 +1,12 @@
-/* Tighten space between intro copy and the image grid */
+/* Breathing room between intro (galleryIntro) and the image grid */
 #gallery .section-heading {
-  margin-bottom: 0;
+  margin-bottom: clamp(40px, 5vw, 64px);
 }
 
 .gallery-grid {
   display: grid;
   gap: 22px;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
 }
 .gallery-card {
   border-radius: var(--radius-lg);
@@ -43,7 +43,8 @@
   font-size: 12px;
   font-weight: 700;
 }
-.gallery-copy { padding: 16px 8px 6px; }
+/* Tags sit above images: space below tag row, not above */
+.gallery-copy { padding: 0 8px 14px; }
 .gallery-tags {
   display: flex;
   flex-wrap: wrap;
@@ -57,4 +58,51 @@
   color: var(--sage-dark);
   font-size: 12px;
   font-weight: 500;
+}
+
+.gallery-more {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.gallery-more-toggle {
+  margin: 0;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--earth);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.gallery-more-toggle:hover {
+  color: var(--sage-dark);
+}
+
+.gallery-more-toggle:focus-visible {
+  outline: 2px solid var(--earth);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.gallery-grid-more {
+  width: 100%;
+}
+
+/* Author display rules must not override the HTML hidden attribute */
+#galleryMore[hidden],
+.gallery-more[hidden] {
+  display: none !important;
+}
+
+#galleryGridMore[hidden],
+.gallery-grid-more[hidden] {
+  display: none !important;
 }

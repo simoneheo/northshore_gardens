@@ -5,6 +5,7 @@
 }
 .reveal-delay-1 { animation-delay: 0.08s; }
 .reveal-delay-2 { animation-delay: 0.16s; }
+.reveal-delay-3 { animation-delay: 0.24s; }
 @keyframes revealUp {
   to { opacity: 1; transform: translateY(0); }
 }

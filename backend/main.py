@@ -1,6 +1,7 @@
 import json
 import os
 import secrets
+import sys
 import traceback
 from datetime import datetime
 from functools import lru_cache
@@ -21,6 +22,12 @@ from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
 load_dotenv()
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+import pricing_config  # noqa: E402
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5500").rstrip("/")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8001").rstrip("/")
@@ -817,11 +824,23 @@ def normalize_checkout_package_id(raw_package_id: str) -> str:
 
 
 def package_checkout_config(package_id: str) -> tuple[str, int]:
-    if package_id == PACKAGE_ID_SIGNATURE_PLAN:
-        return ("Signature Plan", 50)
-    if package_id == PACKAGE_ID_PREMIUM_PLAN:
-        return ("Premium Plan", 50)
-    raise HTTPException(status_code=400, detail="Invalid package_id.")
+    """Stripe line item name and ``unit_amount`` in cents (USD); from ``pricing.json``."""
+    try:
+        plans = pricing_config.load_pricing()
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Server pricing file is missing. Add pricing.json at the repository root.",
+        ) from exc
+    except (json.JSONDecodeError, ValueError, KeyError) as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Server pricing configuration is invalid: {exc}",
+        ) from exc
+    row = plans.get(package_id)
+    if not row:
+        raise HTTPException(status_code=400, detail="Invalid package_id.")
+    return (row["product_name"], row["amount_cents"])
 
 
 def ensure_email_service() -> None:

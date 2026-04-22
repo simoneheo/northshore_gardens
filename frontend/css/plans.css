@@ -27,6 +27,15 @@
   gap: 12px;
 }
 
+.plan-eyebrow {
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--earth);
+}
+
 .plan-card h2 {
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
 }
@@ -37,7 +46,7 @@
 }
 
 .plan-features {
-  margin: 8px 0 0;
+  margin: 20px 0 0;
   padding: 0 0 0 18px;
   color: var(--text-muted);
 }

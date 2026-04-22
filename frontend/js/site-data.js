@@ -9,29 +9,152 @@ window.SITE_DATA = {
   "logoTextStudio": "Studio",
   "footerTagline": "Landscape Design - Northbrook, Illinois",
   "heroEyebrow": "Thinking about your yard?",
-  "heroTitle": "A better yard starts with a few photos.",
-  "heroSubtext": "Answer a couple quick questions about what you're thinking. We'll get a feel for your space and share initial ideas with clear direction.",
-  "heroPrimaryCta": "Free Consult",
+  "heroTitle": "A better yard starts with a few photos",
+  "heroSubtext": "Answer quick questions about what you're thinking. We'll share initial ideas tailored to your vision.",
+  "heroPrimaryCta": "Get Started",
   "heroSecondaryCta": "View Examples",
-  "heroCtaMicrocopy": "Free to start. Professional plans available if you want to continue.",
+  "heroTertiaryCta": "Packages",
+  "heroCtaMicrocopy": "Free to start. Upgrade to a professional plan anytime.",
   "heroPoint1": "Flat-fee design",
   "heroPoint2": "Locally based",
   "heroPoint3": "<7days delivery",
-  "galleryEyebrow": "Proof",
-  "galleryTitle": "Elevated curb appeal.",
-  "galleryIntro": "Small, intentional changes can transform how your home feels.",
+  "galleryEyebrow": "Gallery",
+  "galleryTitle": "Elevated curb appeal",
+  "galleryIntro": "Small changes can transform how your home feels.",
+  "galleryItems": [
+    {
+      "slug": "M5",
+      "beforeSrc": "/assets/gallery/M5/before-800.webp",
+      "afterSrc": "/assets/gallery/M5/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Native Plants",
+        "Pollinator Garden"
+      ]
+    },
+    {
+      "slug": "P1",
+      "beforeSrc": "/assets/gallery/P1/before-800.webp",
+      "afterSrc": "/assets/gallery/P1/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Shade Tolerant",
+        "Symmetric Design",
+        "Low Maintenance"
+      ]
+    },
+    {
+      "slug": "P2",
+      "beforeSrc": "/assets/gallery/P2/before-800.webp",
+      "afterSrc": "/assets/gallery/P2/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Evergreen Structure",
+        "Annual Plants"
+      ]
+    },
+    {
+      "slug": "M8",
+      "beforeSrc": "/assets/gallery/M8/before-800.webp",
+      "afterSrc": "/assets/gallery/M8/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Seasonal Color",
+        "Cut Flower Garden"
+      ]
+    },
+    {
+      "slug": "M2",
+      "beforeSrc": "/assets/gallery/M2/before-800.webp",
+      "afterSrc": "/assets/gallery/M2/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Shade Tolerant",
+        "Seasonal Bloom",
+        "Unique Textures"
+      ]
+    },
+    {
+      "slug": "M6",
+      "beforeSrc": "/assets/gallery/M6/before-800.webp",
+      "afterSrc": "/assets/gallery/M6/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Seasonal Color",
+        "Symmetrical Design"
+      ]
+    },
+    {
+      "slug": "M3",
+      "beforeSrc": "/assets/gallery/M3/before-800.webp",
+      "afterSrc": "/assets/gallery/M3/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Budget Friendly",
+        "Low Maintenance"
+      ]
+    },
+    {
+      "slug": "M1",
+      "beforeSrc": "/assets/gallery/M1/before-800.webp",
+      "afterSrc": "/assets/gallery/M1/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Seasonal Color",
+        "Low Maintenance"
+      ]
+    },
+    {
+      "slug": "P3",
+      "beforeSrc": "/assets/gallery/P3/before-800.webp",
+      "afterSrc": "/assets/gallery/P3/after-800.webp",
+      "beforeAlt": "Before",
+      "afterAlt": "After",
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "tags": [
+        "Symmetric Design"
+      ]
+    }
+  ],
   "howItWorksEyebrow": "How It Works",
   "howItWorksTitle": "Simple from start to finish.",
-  "howItWorksIntro": "You work directly with a designer from the start, keeping the process personal and low-pressure.",
-  "step1Title": "Share a few details about your yard",
-  "step1Body": "Answer a couple questions and upload photos of your yard.",
-  "step2Title": "Hear back from a designer",
-  "step2Body": "We review your space and reach out with ideas tailored to your yard.",
-  "step3Title": "Move forward if it feels right",
-  "step3Body": "If you choose to continue, you can purchase a professional plan. If not, you still leave with ideas.",
-  "whyEyebrow": "Why This Is Different",
+  "howItWorksIntro": "Work directly with a designer from the get-go. We keep it personal and low-pressure.",
+  "step1Title": "Share your yard",
+  "step1Body": "Answer a few questions and upload photos of your space.",
+  "step2Title": "Get ideas",
+  "step2Body": "We review your space and reply with initial concepts.",
+  "step3Title": "Move forward",
+  "step3Body": "Purchase a professional plan if it feels right. If not, keep the ideas.",
+  "step4Title": "Build design",
+  "step4Body": "Use it with a contractor or DIY. We help coordinate with a trusted installer if needed.",
+  "whyEyebrow": "Why We Are Different",
   "whyTitle": "Focused on Design",
-  "whyBody": "Traditional landscaping is driven by installation incentives. We take a different approach. Based in Northbrook, IL, we create tailored yard plans with no inflated scope. A refined design service you can hand off to a contractor or build yourself, with complimentary coordination if requested.",
+  "whyBody": "Traditional landscaping is driven by installation incentives. We take a different approach. We create tailored yard plans with no inflated scope.",
   "diff1Title": "Design-first approach",
   "diff1Body": "No installation incentives. Just a complete plan aligned with your vision and budget.",
   "diff2Title": "Flat-fee and simple",
@@ -43,34 +166,38 @@ window.SITE_DATA = {
   "diff5Title": "Fast turnaround",
   "diff5Body": "Receive a detailed professional plan in under 7 days.",
   "packagesEyebrow": "Packages",
-  "packagesTitle": "Every design is created by a local expert. No templates or algorithms.",
-  "packagesIntro": "Start with a quick consultation. Choose a plan when you're ready to move forward.",
+  "packagesTitle": "Every design is by a local designer.",
+  "packagesIntro": "Start with a consultation. Choose a plan when you're ready to move forward.",
+  "packagesCta": "Get Consultation",
   "package1Label": "Most homeowners choose this",
   "package1Title": "Signature Plan",
-  "package1Subtitle": "A complete, build-ready design for your yard.",
+  "package1Subtitle": "A complete, build-ready plan for your yard.",
   "package1Item1": "Custom design tailored to your home",
   "package1Item2": "Top-view layout with plant names",
   "package1Item3": "Plant quantities and specifications",
   "package1Item4": "Plant sheet with bloom season, color palette, and sun info",
   "package1Item5": "Delivered within 7 days",
   "package1Item6": "Optional: coordination with a trusted contractor",
-  "package1Note": "Everything you need to move forward with clarity, whether you're working with a contractor or building it yourself.",
+  "package1Note": "Everything for contractors or DIYers.",
   "package2Label": "For more guidance",
   "package2Title": "Premium Plan",
-  "package2Subtitle": "Everything in Signature, with added clarity and flexibility.",
+  "package2Subtitle": "Everything in Signature, with added support.",
   "package2Item1": "Everything in Signature Plan",
   "package2Item2": "1 revision",
   "package2Item3": "Plant substitutions",
   "package2Item4": "Installation guidelines",
   "package2Item5": "Phasing suggestions",
   "package2Item6": "Nursery budget sheet",
-  "package2Note": "Best if you want more flexibility or plan to build in stages.",
-  "contactTitle": "Tell us what you're thinking about for your yard.",
-  "contactIntro": "Send a description or photos of your space. Our designers will take a look and reach out with thoughtful suggestions.",
+  "package2Note": "Best for more flexibility or building in phases.",
+  "contactTitle": "Tell us what you're thinking about.",
+  "contactIntro": "Send a description or photos of your yard. Our designers will take a look and reach out.",
+  "contactTrust": "No sales pressure. No spam.",
   "contactMessageLabel": "Message",
   "contactEmailLabel": "Email",
   "contactAttachmentLabel": "Add a photo (optional)",
   "contactSubmitButton": "Send Message",
   "contactSuccessTitle": "Thank you! We'll get back to you as soon as possible.",
-  "contactSuccessBody": "Photos help us give more specific ideas. Feel free to send more details anytime."
+  "contactSuccessBody": "Photos help us give more specific ideas. Feel free to send more details anytime.",
+  "package1Price": "$00.50",
+  "package2Price": "$00.50"
 };

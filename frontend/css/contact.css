@@ -26,6 +26,11 @@
   margin-top: 14px;
 }
 
+.contact-hero .contact-trust {
+  margin-top: 10px;
+  max-width: 52ch;
+}
+
 .contact-form {
   margin-top: 26px;
   display: grid;

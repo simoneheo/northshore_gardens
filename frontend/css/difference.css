@@ -4,6 +4,9 @@
   gap: 24px;
   align-items: start;
 }
+.difference-copy h2 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+}
 .difference-copy p:last-child { margin-top: 16px; color: var(--text-muted); font-size: 17px; }
 .difference-list {
   display: grid;
@@ -11,11 +14,31 @@
 }
 .difference-item {
   display: grid;
-  gap: 4px;
+  grid-template-columns: 52px 1fr;
+  gap: 14px;
+  align-items: start;
   padding: 20px 22px;
   border-radius: 18px;
   background: rgba(255,255,255,0.84);
   border: 1px solid rgba(90,107,74,0.09);
+}
+.difference-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f4f3ec;
+  color: var(--sage-dark);
+}
+.difference-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.difference-content {
+  display: grid;
+  gap: 4px;
 }
 .difference-item strong { color: var(--sage-dark); }
 .difference-item span { color: var(--text-muted); }

@@ -1,19 +1,20 @@
 hero:
   eyebrow: Thinking about your yard?
-  title: A better yard starts with a few photos.
-  subtext: Answer a couple quick questions about what you're thinking. We'll get a feel for your space and share initial ideas with clear direction.
+  title: A better yard starts with a few photos
+  subtext: Answer quick questions about what you're thinking. We'll share initial ideas tailored to your vision.
   cta:
-    primary: Free Consult
+    primary: Get Started
     secondary: View Examples
-    microcopy: Free to start. Professional plans available if you want to continue.
+    tertiary: Packages
+    microcopy: Free to start. Upgrade to a professional plan anytime.
   points:
     - Flat-fee design
     - Locally based
     - <7days delivery
 
 contact:
-  title: Tell us what you're thinking about for your yard.
-  body: Send a description or photos of your space. Our designers will take a look and reach out with thoughtful suggestions. 
+  title: Tell us what you're thinking about.
+  body: Send a description or photos of your yard. Our designers will take a look and reach out. 
   trust: No sales pressure. No spam.
   form:
     message_label: Message
@@ -25,27 +26,27 @@ contact:
     body: Photos help us give more specific ideas. Feel free to send more details anytime.
 
 gallery:
-  title: Elevated curb appeal.
-  intro: Small, intentional changes can transform how your home feels. 
+  title: Elevated curb appeal
+  intro: Small changes can transform how your home feels. 
 
 how_it_works:
   eyebrow: How It Works
   title: Simple from start to finish.
-  intro: You work directly with a designer from the start, keeping the process personal and low-pressure.
+  intro: Work directly with a designer from the get-go. We keep it personal and low-pressure.
   steps:
-    - title: Share a few details about your yard
-      body: Answer a couple questions and upload photos of your yard.
-    - title: Hear back from a designer
-      body: We review your space and reach out with ideas tailored to your yard.
-    - title: Move forward if it feels right
-      body: If you choose to continue, you can purchase a professional plan. If not, you still leave with ideas.
-    - title: Apply your design
-      body: You receive a buildable plan you can hand off to a contractor or build yourself. We help you coordinate with a trusted installer, if needed. 
-  
+    - title: Share your yard
+      body: Answer a few questions and upload photos of your space.
+    - title: Get ideas 
+      body: We review your space and reply with initial concepts. 
+    - title: Move forward
+      body: Purchase a professional plan if it feels right. If not, keep the ideas.
+    - title: Build design
+      body: Use it with a contractor or DIY. We help coordinate with a trusted installer if needed.
+
 why_this_is_different:
-  eyebrow: Why This Is Different
+  eyebrow: Why We Are Different
   title: Focused on Design
-  body: Traditional landscaping is driven by installation incentives. We take a different approach. Based in Northbrook, IL, we create tailored yard plans with no inflated scope. A refined design service you can hand off to a contractor or build yourself, with complimentary coordination if requested.
+  body: Traditional landscaping is driven by installation incentives. We take a different approach. We create tailored yard plans with no inflated scope.
   items:
     - title: Design-first approach
       body: No installation incentives. Just a complete plan aligned with your vision and budget.
@@ -62,14 +63,16 @@ why_this_is_different:
     - title: Fast turnaround
       body: Receive a detailed professional plan in under 7 days.
 
+# Package prices: edit pricing.json at repo root, then run python3 build_site.py (Stripe uses the same file).
 packages:
   eyebrow: Packages
-  title: Every design is created by a local expert. No templates or algorithms.
-  intro: Start with a quick consultation. Choose a plan when you're ready to move forward.
+  title: Every design is by a local designer. 
+  intro: Start with a consultation. Choose a plan when you're ready to move forward.
+  cta: Get Consultation
   signature:
     label: Most homeowners choose this
     title: Signature Plan
-    subtitle: A complete, build-ready design for your yard.
+    subtitle: A complete, build-ready plan for your yard.
     items:
       - Custom design tailored to your home
       - Top-view layout with plant names
@@ -77,11 +80,11 @@ packages:
       - Plant sheet with bloom season, color palette, and sun info
       - Delivered within 7 days
       - "Optional: coordination with a trusted contractor"
-    note: Everything you need to move forward with clarity, whether you're working with a contractor or building it yourself.
+    note: Everything for contractors or DIYers.
   premium:
     label: For more guidance
     title: Premium Plan
-    subtitle: Everything in Signature, with added clarity and flexibility.
+    subtitle: Everything in Signature, with added support.
     items:
       - Everything in Signature Plan
       - 1 revision
@@ -89,7 +92,7 @@ packages:
       - Installation guidelines
       - Phasing suggestions
       - Nursery budget sheet
-    note: Best if you want more flexibility or plan to build in stages.
+    note: Best for more flexibility or building in phases.
 
 navigation:
   links:

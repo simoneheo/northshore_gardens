@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import yaml
+
+from pricing_config import load_pricing
 
 
 REQUIRED_TOP_LEVEL_KEYS = ("hero", "contact")
@@ -36,6 +38,66 @@ def _load_site_yaml(input_path: Path) -> dict[str, object]:
         raise ValueError(f"Malformed YAML in {input_path}: {exc}") from exc
 
     return _validate_site_content(parsed)
+
+
+def _collect_gallery_items(gallery_dir: Path) -> list[dict[str, object]]:
+    """Read each subfolder's meta.json; sort by ``order``. Image paths default to before/after-800.webp."""
+    rows: list[tuple[int, str, dict[str, object]]] = []
+    if not gallery_dir.is_dir():
+        return []
+    for sub in sorted(gallery_dir.iterdir()):
+        if not sub.is_dir():
+            continue
+        meta_path = sub / "meta.json"
+        if not meta_path.is_file():
+            continue
+        try:
+            raw = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        if not isinstance(raw, dict):
+            continue
+        order_val = raw.get("order")
+        if isinstance(order_val, bool) or order_val is None:
+            order = 999
+        elif isinstance(order_val, int):
+            order = order_val
+        else:
+            try:
+                order = int(order_val)
+            except (TypeError, ValueError):
+                order = 999
+        tags_raw = raw.get("tags")
+        tags: list[str] = []
+        if isinstance(tags_raw, list):
+            tags = [t.strip() for t in tags_raw if isinstance(t, str) and t.strip()]
+        slug = sub.name
+        before_file = (
+            raw["before_image"] if isinstance(raw.get("before_image"), str) else "before-800.webp"
+        )
+        after_file = (
+            raw["after_image"] if isinstance(raw.get("after_image"), str) else "after-800.webp"
+        )
+        before_alt = raw["before_alt"] if isinstance(raw.get("before_alt"), str) else "Before"
+        after_alt = raw["after_alt"] if isinstance(raw.get("after_alt"), str) else "After"
+        before_label = (
+            raw["before_label"] if isinstance(raw.get("before_label"), str) else "Before"
+        )
+        after_label = raw["after_label"] if isinstance(raw.get("after_label"), str) else "After"
+        base = f"/assets/gallery/{slug}"
+        item: dict[str, object] = {
+            "slug": slug,
+            "beforeSrc": f"{base}/{before_file}",
+            "afterSrc": f"{base}/{after_file}",
+            "beforeAlt": before_alt,
+            "afterAlt": after_alt,
+            "beforeLabel": before_label,
+            "afterLabel": after_label,
+            "tags": tags,
+        }
+        rows.append((order, slug, item))
+    rows.sort(key=lambda r: (r[0], r[1]))
+    return [r[2] for r in rows]
 
 
 def build_site_data(input_path: Path, output_path: Path) -> None:
@@ -85,6 +147,8 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
                 out["heroPrimaryCta"] = cta["primary"]
             if isinstance(cta.get("secondary"), str):
                 out["heroSecondaryCta"] = cta["secondary"]
+            if isinstance(cta.get("tertiary"), str):
+                out["heroTertiaryCta"] = cta["tertiary"]
             if isinstance(cta.get("microcopy"), str):
                 out["heroCtaMicrocopy"] = cta["microcopy"]
         points = hero.get("points")
@@ -98,11 +162,18 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
 
     gallery = content.get("gallery")
     if isinstance(gallery, dict):
-        out["galleryEyebrow"] = "Proof"
+        out["galleryEyebrow"] = (
+            gallery["eyebrow"] if isinstance(gallery.get("eyebrow"), str) else "Gallery"
+        )
         if isinstance(gallery.get("title"), str):
             out["galleryTitle"] = gallery["title"]
         if isinstance(gallery.get("intro"), str):
             out["galleryIntro"] = gallery["intro"]
+
+    repo_root = Path(__file__).resolve().parent
+    gallery_items = _collect_gallery_items(repo_root / "frontend" / "assets" / "gallery")
+    if gallery_items:
+        out["galleryItems"] = gallery_items
 
     how_it_works = content.get("how_it_works")
     if isinstance(how_it_works, dict):
@@ -114,7 +185,7 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
             out["howItWorksIntro"] = how_it_works["intro"]
         steps = how_it_works.get("steps")
         if isinstance(steps, list):
-            for idx in range(3):
+            for idx in range(4):
                 if idx < len(steps) and isinstance(steps[idx], dict):
                     title = steps[idx].get("title")
                     body = steps[idx].get("body")
@@ -150,6 +221,8 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
             out["packagesTitle"] = packages["title"]
         if isinstance(packages.get("intro"), str):
             out["packagesIntro"] = packages["intro"]
+        if isinstance(packages.get("cta"), str):
+            out["packagesCta"] = packages["cta"]
 
         signature = packages.get("signature")
         if isinstance(signature, dict):
@@ -189,8 +262,12 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
             out["contactTitle"] = contact["title"]
         if isinstance(contact.get("body"), str):
             out["contactIntro"] = contact["body"]
+        if isinstance(contact.get("trust"), str):
+            out["contactTrust"] = contact["trust"]
         form = contact.get("form")
         if isinstance(form, dict):
+            if isinstance(form.get("name_label"), str):
+                out["contactNameLabel"] = form["name_label"]
             if isinstance(form.get("message_label"), str):
                 out["contactMessageLabel"] = form["message_label"]
             if isinstance(form.get("email_label"), str):
@@ -206,7 +283,15 @@ def _build_frontend_site_data(content: dict[str, object]) -> dict[str, object]:
             if isinstance(success.get("body"), str):
                 out["contactSuccessBody"] = success["body"]
 
+    _merge_plan_pricing_into_site_data(out)
     return out
+
+
+def _merge_plan_pricing_into_site_data(out: dict[str, object]) -> None:
+    """UI package prices from ``pricing.json`` (same source as Stripe in ``backend/main.py``)."""
+    plans = load_pricing()
+    out["package1Price"] = plans["signature_plan"]["display"]
+    out["package2Price"] = plans["premium_plan"]["display"]
 
 
 def build_frontend_site_data(input_path: Path, output_path: Path) -> None:

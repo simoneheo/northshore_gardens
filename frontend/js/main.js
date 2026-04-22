@@ -17,24 +17,24 @@ function initFloatingContactWidget() {
     </button>
     <section class="floating-contact-panel" id="floatingContactPanel" aria-label="Talk to a designer panel">
       <div class="floating-contact-head">
-        <h3>Talk to a designer</h3>
+        <h3 id="floatingContactPanelTitle">Talk to a designer</h3>
         <button type="button" class="floating-contact-close" id="floatingContactClose" aria-label="Close contact panel">x</button>
       </div>
       <div class="floating-contact-copy">
-        <p>Send a quick note or a photo of your yard and we'll respond with a few thoughtful ideas.</p>
-        <p>No sales pressure. No spam.</p>
+        <p id="floatingContactIntro"></p>
+        <p id="floatingContactTrust" class="contact-trust"></p>
       </div>
       <form id="floatingContactForm" class="floating-contact-form">
-        <label for="floatingContactName">What should we call you?
+        <label for="floatingContactName"><span id="floatingContactNameLabel"></span>
           <input id="floatingContactName" class="text-input" type="text" name="name" required />
         </label>
-        <label for="floatingContactMessage">What are you thinking about for your yard?
+        <label for="floatingContactMessage"><span id="floatingContactMessageLabel"></span>
           <textarea id="floatingContactMessage" class="text-area" name="message" required></textarea>
         </label>
-        <label for="floatingContactEmail">Where should we send our response?
+        <label for="floatingContactEmail"><span id="floatingContactEmailLabel"></span>
           <input id="floatingContactEmail" class="text-input" type="email" name="email" required />
         </label>
-        <label for="floatingContactAttachments">Add a photo (optional)
+        <label for="floatingContactAttachments"><span id="floatingContactUploadLabel"></span>
           <input id="floatingContactAttachments" class="attachment-input" type="file" name="attachments" accept="image/*" multiple />
           <span class="floating-contact-hint">Up to 5 images.</span>
         </label>
@@ -55,19 +55,54 @@ function initFloatingContactWidget() {
   const emailNode = document.getElementById('floatingContactEmail');
   const attachmentsNode = document.getElementById('floatingContactAttachments');
 
+  const site = window.SITE_DATA || {};
+  const panelTitle = document.getElementById('floatingContactPanelTitle');
+  if (panelTitle) panelTitle.textContent = site.contactTitle || 'Talk to a designer';
+  const introEl = document.getElementById('floatingContactIntro');
+  if (introEl) {
+    introEl.textContent =
+      site.contactIntro ||
+      "Send a quick note or a photo of your yard and we'll respond with a few thoughtful ideas.";
+  }
+  const trustEl = document.getElementById('floatingContactTrust');
+  if (trustEl) trustEl.textContent = site.contactTrust || 'No sales pressure. No spam.';
+  const nameLbl = document.getElementById('floatingContactNameLabel');
+  if (nameLbl) nameLbl.textContent = site.contactNameLabel || 'Name';
+  const msgLbl = document.getElementById('floatingContactMessageLabel');
+  if (msgLbl) msgLbl.textContent = site.contactMessageLabel || 'Message';
+  const emailLbl = document.getElementById('floatingContactEmailLabel');
+  if (emailLbl) emailLbl.textContent = site.contactEmailLabel || 'Email';
+  const uploadLbl = document.getElementById('floatingContactUploadLabel');
+  if (uploadLbl) uploadLbl.textContent = site.contactAttachmentLabel || 'Add a photo (optional)';
+  if (submitButton) submitButton.textContent = site.contactSubmitButton || 'Send Message';
+
   function setOpen(isOpen) {
     mount.setAttribute('data-open', isOpen ? 'true' : 'false');
     if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   }
 
-  function setStatus(message, kind) {
+  function setStatus(message, kind, detail) {
     if (!statusNode) return;
-    if (!message) {
-      statusNode.innerHTML = '';
+    statusNode.replaceChildren();
+    if (!message && !detail) return;
+    const className = kind === 'error' ? 'error-text' : (kind === 'success' ? 'success-text' : '');
+    if (kind === 'success' && detail) {
+      const p1 = document.createElement('p');
+      p1.className = className;
+      p1.textContent = message;
+      const p2 = document.createElement('p');
+      p2.className = className;
+      p2.style.marginTop = '6px';
+      p2.textContent = detail;
+      statusNode.append(p1, p2);
       return;
     }
-    const className = kind === 'error' ? 'error-text' : (kind === 'success' ? 'success-text' : '');
-    statusNode.innerHTML = `<p class="${className}">${message}</p>`;
+    if (message) {
+      const p = document.createElement('p');
+      p.className = className;
+      p.textContent = message;
+      statusNode.appendChild(p);
+    }
   }
 
   trigger?.addEventListener('click', () => {
@@ -83,7 +118,7 @@ function initFloatingContactWidget() {
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    setStatus('', '');
+    setStatus('');
 
     const name = nameNode?.value?.trim() || '';
     const message = messageNode?.value?.trim() || '';
@@ -124,17 +159,20 @@ function initFloatingContactWidget() {
         } catch (_err) {}
         throw new Error(detail);
       }
-      setStatus(
-        "Thanks - we'll take a look and respond by email. If you included a photo, that helps us give more specific ideas.",
-        'success'
-      );
+      const okTitle =
+        site.contactSuccessTitle ||
+        "Thanks - we'll take a look and respond by email.";
+      const okBody =
+        site.contactSuccessBody ||
+        "If you included a photo, that helps us give more specific ideas.";
+      setStatus(okTitle, 'success', okBody);
       form.reset();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Unable to send message right now.', 'error');
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
-        submitButton.textContent = 'Send Message';
+        submitButton.textContent = site.contactSubmitButton || 'Send Message';
       }
     }
   });

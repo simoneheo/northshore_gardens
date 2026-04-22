@@ -12,7 +12,7 @@
 .final-cta h2 { font-size: clamp(2rem, 4vw, 3.4rem); }
 .final-cta p:last-of-type { margin-top: 14px; color: var(--text-muted); max-width: 54ch; }
 .final-cta-actions { display: grid; justify-items: start; gap: 12px; }
-.microcopy { color: var(--text-muted); font-size: 14px; }
+.microcopy { color: var(--text-muted); font-size: 18px; }
 
 .site-footer {
   padding: 24px 0 40px;

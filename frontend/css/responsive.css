@@ -40,6 +40,19 @@
 
 @media (max-width: 560px) {
   .container { width: min(100% - 24px, 1180px); }
+  .hero-subtext,
+  .hero-microcopy,
+  .section-heading p:last-child,
+  .difference-copy p:last-child,
+  .step-card p,
+  .gallery-copy p,
+  .package-subtitle,
+  .package-note,
+  .difference-item span,
+  .contact-card p,
+  .checkout-copy {
+    font-size: 16px;
+  }
   .button,
   .button-secondary,
   .button-ghost { width: 100%; }
