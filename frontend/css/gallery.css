@@ -1,3 +1,8 @@
+/* Tighten space between intro copy and the image grid */
+#gallery .section-heading {
+  margin-bottom: 0;
+}
+
 .gallery-grid {
   display: grid;
   gap: 22px;
@@ -39,5 +44,17 @@
   font-weight: 700;
 }
 .gallery-copy { padding: 16px 8px 6px; }
-.gallery-copy h3 { font-size: 1.5rem; }
-.gallery-copy p { margin-top: 10px; color: var(--text-muted); }
+.gallery-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gallery-tag {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(90,107,74,0.14);
+  background: rgba(255,255,255,0.88);
+  color: var(--sage-dark);
+  font-size: 12px;
+  font-weight: 500;
+}

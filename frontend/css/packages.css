@@ -12,28 +12,21 @@
 .package-card-featured {
   background: linear-gradient(180deg, rgba(245,240,232,0.75) 0%, #fff 100%);
 }
-.package-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-}
 .package-label {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0.04em;
   font-size: 12px;
   font-weight: 700;
   color: var(--earth);
 }
-.package-badge {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(90,107,74,0.08);
-  color: var(--sage-dark);
-  font-size: 13px;
-  font-weight: 600;
+.package-subtitle {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.45;
 }
-.package-card h3 { margin-top: 20px; font-size: 1.92rem; }
+.package-card h3 { margin-top: 14px; font-size: 1.92rem; }
 .package-card ul {
   margin: 20px 0 0;
   padding: 0 0 0 18px;

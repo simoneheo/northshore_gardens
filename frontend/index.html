@@ -57,11 +57,18 @@
     <section class="hero-section">
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow" data-edit="heroEyebrow">Front yard design for North Shore homes</p>
+          <div class="hero-points">
+            <span data-edit="heroPoint1">Low pressure</span>
+            <span data-edit="heroPoint2">No meetings required</span>
+            <span data-edit="heroPoint3">Zone 5b aware</span>
+          </div>
+          <p class="eyebrow" data-edit="heroEyebrow">Yard design for Northshore homes</p>
           <h1 data-edit="heroTitle">A better front yard starts with a few photos.</h1>
           <p class="hero-subtext" data-edit="heroSubtext">
-            Send a few yard photos and answer a couple quick questions. We’ll personally review your space and respond with thoughtful design ideas before you decide whether to move forward.
+            Send a few yard photos and answer a couple quick questions. We'll review your space and share thoughtful design ideas, even if you don't move forward.
           </p>
+
+          <p class="hero-microcopy" data-edit="heroCtaMicrocopy">Free to start. Professional plans available if you want to continue.</p>
 
           <div class="hero-actions">
             <a
@@ -74,31 +81,6 @@
             <a class="button button-secondary" href="#gallery" data-edit="heroSecondaryCta">View Examples</a>
           </div>
 
-          <div class="hero-points">
-            <span data-edit="heroPoint1">Low pressure</span>
-            <span data-edit="heroPoint2">No meetings required</span>
-            <span data-edit="heroPoint3">Zone 5b aware</span>
-          </div>
-        </div>
-
-        <div class="hero-proof reveal reveal-delay-1">
-          <div class="hero-proof-card">
-            <div class="proof-label-row">
-              <span data-edit="proofLabelLeft">Curated proof</span>
-              <span data-edit="proofLabelRight">Before → After</span>
-            </div>
-            <div class="hero-proof-stack">
-              <figure>
-                <img src="/assets/gallery/M5/before-800.webp" alt="Front yard before design" />
-                <figcaption data-edit="beforeCaption">Before</figcaption>
-              </figure>
-              <figure>
-                <img src="/assets/gallery/M5/after-800.webp" alt="Front yard after design" />
-                <figcaption data-edit="afterCaption">After</figcaption>
-              </figure>
-            </div>
-            <p class="proof-note" data-edit="proofNote">Thoughtful layouts, cleaner structure, and planting direction tailored to the house instead of generic templates.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -106,7 +88,7 @@
     <section id="gallery" class="section section-cream">
       <div class="container">
         <div class="section-heading reveal">
-          <p class="eyebrow" data-edit="galleryEyebrow">Proof</p>
+          <p class="eyebrow" data-edit="galleryEyebrow">Gallery</p>
           <h2 data-edit="galleryTitle">Curated transformations that build trust fast.</h2>
           <p data-edit="galleryIntro">
             A few stronger examples do more than a crowded gallery. These are here to show range, restraint, and the kind of clarity homeowners are actually looking for.
@@ -126,8 +108,11 @@
               </figure>
             </div>
             <div class="gallery-copy">
-              <h3 data-edit="galleryCard1Title">Stronger structure without feeling overdone</h3>
-              <p data-edit="galleryCard1Body">Used as a trust-builder near the top of the page, not buried in a separate gallery-first experience.</p>
+              <div class="gallery-tags" aria-label="Project tags">
+                <span class="gallery-tag">Low maintenance</span>
+                <span class="gallery-tag">Low budget</span>
+                <span class="gallery-tag">Partial sun</span>
+              </div>
             </div>
           </article>
 
@@ -143,8 +128,11 @@
               </figure>
             </div>
             <div class="gallery-copy">
-              <h3 data-edit="galleryCard2Title">Refined curb appeal from photos and context</h3>
-              <p data-edit="galleryCard2Body">Enough visual proof to feel credible, without overwhelming the homepage with every project at once.</p>
+              <div class="gallery-tags" aria-label="Project tags">
+                <span class="gallery-tag">Low maintenance</span>
+                <span class="gallery-tag">Low budget</span>
+                <span class="gallery-tag">Partial sun</span>
+              </div>
             </div>
           </article>
 
@@ -160,18 +148,13 @@
               </figure>
             </div>
             <div class="gallery-copy">
-              <h3 data-edit="galleryCard3Title">Curated, calm, and easy to trust</h3>
-              <p data-edit="galleryCard3Body">The homepage proves capability first, then invites the user into a simple intake instead of pushing straight to checkout.</p>
+              <div class="gallery-tags" aria-label="Project tags">
+                <span class="gallery-tag">Low maintenance</span>
+                <span class="gallery-tag">Low budget</span>
+                <span class="gallery-tag">Partial sun</span>
+              </div>
             </div>
           </article>
-        </div>
-        <div class="section-cta-row reveal">
-          <a
-            class="button"
-            href="./intake.html"
-            data-intake-entry-intent="quick_ideas"
-            data-intake-source-page="gallery"
-          >Get Quick Ideas</a>
         </div>
       </div>
     </section>
@@ -181,6 +164,7 @@
         <div class="section-heading reveal">
           <p class="eyebrow" data-edit="howItWorksEyebrow">How It Works</p>
           <h2 data-edit="howItWorksTitle">Simple enough to start in minutes.</h2>
+          <p data-edit="howItWorksIntro">You work directly with a designer from the start</p>
         </div>
 
         <div class="steps-grid">
@@ -200,14 +184,6 @@
             <p data-edit="step3Body">Packages still exist, but they are no longer the forced first action. The relationship starts with trust.</p>
           </article>
         </div>
-        <div class="section-cta-row reveal">
-          <a
-            class="button"
-            href="./intake.html"
-            data-intake-entry-intent="quick_ideas"
-            data-intake-source-page="how_it_works"
-          >Get Quick Ideas</a>
-        </div>
       </div>
     </section>
 
@@ -226,7 +202,7 @@
           <div class="difference-item"><strong data-edit="diff2Title">No pressure</strong><span data-edit="diff2Body">The initial step is simply to get thoughtful ideas.</span></div>
           <div class="difference-item"><strong data-edit="diff3Title">No meetings required</strong><span data-edit="diff3Body">The flow is built around photos and a short intake.</span></div>
           <div class="difference-item"><strong data-edit="diff4Title">Flat-fee design</strong><span data-edit="diff4Body">Clear productized service once they choose to continue.</span></div>
-          <div class="difference-item"><strong data-edit="diff5Title">North Shore / Zone 5b expertise</strong><span data-edit="diff5Body">Local conditions and neighborhood fit are part of the value.</span></div>
+          <div class="difference-item"><strong data-edit="diff5Title">Fast turnaround</strong><span data-edit="diff5Body">Receive a detailed professional plan in under 7 days.</span></div>
         </div>
       </div>
     </section>
@@ -235,43 +211,41 @@
       <div class="container">
         <div class="section-heading reveal">
           <p class="eyebrow" data-edit="packagesEyebrow">Packages</p>
-          <h2 data-edit="packagesTitle">Still available. Just no longer the first forced step.</h2>
+          <h2 data-edit="packagesTitle">Every design is created by a local expert. No templates or algorithms.</h2>
           <p data-edit="packagesIntro">
-            Once a homeowner has seen your style and heard from you personally, these become the natural next step instead of the entry point.
+            Start with a quick consultation. Choose a plan when you're ready to move forward.
           </p>
         </div>
 
         <div class="packages-grid">
           <article class="package-card reveal">
-            <div class="package-top">
-              <p class="package-label" data-edit="package1Label">Signature Plan</p>
-              <span class="package-badge" data-edit="package1Badge">Most straightforward</span>
-            </div>
-            <h3 data-edit="package1Title">Fast, polished design direction.</h3>
+            <p class="package-label" data-edit="package1Label">Most homeowners choose this</p>
+            <h3 data-edit="package1Title">Signature Plan</h3>
+            <p class="package-subtitle" data-edit="package1Subtitle">A complete, build-ready design for your yard.</p>
             <ul>
-              <li data-edit="package1Item1">Before / after design direction</li>
-              <li data-edit="package1Item2">Plan view and plant names</li>
-              <li data-edit="package1Item3">Plant sheet and quantities</li>
-              <li data-edit="package1Item4">Delivered within 7 days</li>
-              <li data-edit="package1Item5">No revision</li>
+              <li data-edit="package1Item1">Custom design tailored to your home</li>
+              <li data-edit="package1Item2">Top-view layout with plant names</li>
+              <li data-edit="package1Item3">Plant quantities and specifications</li>
+              <li data-edit="package1Item4">Plant sheet with bloom season, color palette, and sun info</li>
+              <li data-edit="package1Item5">Delivered within 7 days</li>
+              <li data-edit="package1Item6">Optional: coordination with a local contractor</li>
             </ul>
-            <p class="package-note" data-edit="package1Note">Available after your initial ideas.</p>
+            <p class="package-note" data-edit="package1Note">Everything you need to move forward with clarity, whether you're working with a contractor or building it yourself.</p>
           </article>
 
           <article class="package-card package-card-featured reveal reveal-delay-1">
-            <div class="package-top">
-              <p class="package-label" data-edit="package2Label">Premium Plan</p>
-              <span class="package-badge" data-edit="package2Badge">For more guidance</span>
-            </div>
-            <h3 data-edit="package2Title">Everything in the Signature Plan, plus clearer execution help.</h3>
+            <p class="package-label" data-edit="package2Label">For more guidance</p>
+            <h3 data-edit="package2Title">Premium Plan</h3>
+            <p class="package-subtitle" data-edit="package2Subtitle">Everything in Signature, with added clarity and flexibility.</p>
             <ul>
-              <li data-edit="package2Item1">1 revision included</li>
-              <li data-edit="package2Item2">Plant spacing and sizing guidance</li>
-              <li data-edit="package2Item3">Substitution options</li>
-              <li data-edit="package2Item4">Installation steps and phasing direction</li>
-              <li data-edit="package2Item5">More contractor-ready detail</li>
+              <li data-edit="package2Item1">Everything in Signature Plan</li>
+              <li data-edit="package2Item2">1 revision</li>
+              <li data-edit="package2Item3">Plant substitutions</li>
+              <li data-edit="package2Item4">Installation guidelines</li>
+              <li data-edit="package2Item5">Phasing suggestions</li>
+              <li data-edit="package2Item6">Nursery budget sheet</li>
             </ul>
-            <p class="package-note" data-edit="package2Note">Presented as the next step, not a paywall.</p>
+            <p class="package-note" data-edit="package2Note">Best if you want more flexibility or plan to build in stages.</p>
           </article>
         </div>
         <div class="section-cta-row reveal">
@@ -285,29 +259,6 @@
       </div>
     </section>
 
-    <section class="section final-cta-section">
-      <div class="container">
-        <div class="final-cta reveal">
-          <div>
-            <p class="eyebrow" data-edit="finalCtaEyebrow">Thinking about your yard?</p>
-            <h2 data-edit="finalCtaTitle">Send a photo and get a thoughtful first response.</h2>
-            <p data-edit="finalCtaBody">
-              A quick phone photo is enough to start. No sales pressure. No spam. Just a clearer sense of what your yard could become.
-            </p>
-          </div>
-          <div class="final-cta-actions">
-            <a
-              class="button"
-              href="./intake.html"
-              data-edit="finalCtaButton"
-              data-intake-entry-intent="quick_ideas"
-              data-intake-source-page="final_cta"
-            >Get Quick Ideas</a>
-            <p class="microcopy" data-edit="finalCtaMicrocopy">You review the ideas first. Purchase only if it feels right.</p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">

@@ -34,6 +34,10 @@
   font-weight: 500;
 }
 .site-nav a:hover { color: var(--sage-dark); }
+.site-nav a.button,
+.site-nav a.button:hover {
+  color: #fff;
+}
 .nav-toggle {
   display: none;
   width: 48px;
