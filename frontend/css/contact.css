@@ -72,6 +72,54 @@
   font-size: 14px;
 }
 
+.contact-attachment-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.contact-attachment-list .attachment-list-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sage-dark);
+}
+
+.contact-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(90, 107, 74, 0.14);
+  background: rgba(245, 240, 232, 0.45);
+}
+
+.contact-file-row .contact-file-name {
+  font-size: 13px;
+  color: var(--charcoal);
+  word-break: break-all;
+}
+
+.contact-file-row .contact-remove-file {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(90, 107, 74, 0.25);
+  background: #fff;
+  color: var(--sage-dark);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.contact-file-row .contact-remove-file:hover {
+  background: rgba(177, 69, 69, 0.08);
+  border-color: rgba(177, 69, 69, 0.35);
+  color: #8f2f2f;
+}
+
 .contact-actions {
   margin-top: 8px;
   display: flex;

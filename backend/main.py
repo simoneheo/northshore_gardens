@@ -424,11 +424,15 @@ def _format_intake_answer_value_html(val: Any) -> str:
     return escape_html(str(val))
 
 
-def format_intake_answers_bullets_html(answers: dict[str, Any]) -> str:
+def format_intake_answers_bullets_html(
+    answers: dict[str, Any],
+    *,
+    extra_skip_keys: frozenset[str] | None = None,
+) -> str:
     """HTML <ul> of questionnaire answers for admin email (values from stored answers_json)."""
     if not isinstance(answers, dict) or not answers:
         return "<ul><li><em>No questionnaire answers.</em></li></ul>"
-    skip = _intake_photo_keys_to_skip(answers)
+    skip = _intake_photo_keys_to_skip(answers) | (extra_skip_keys or frozenset())
     items: list[str] = []
     for key in _intake_answer_key_order(answers):
         if key in skip:
@@ -547,7 +551,13 @@ def sample_email_template_context(template_name: str) -> dict[str, Any]:
             "client_zip": "60062",
             "entry_intent": "quick_ideas",
             "source_page": "hero",
-            "answer_bullets": format_intake_answers_bullets_html(sample_answers),
+            "answer_bullets": format_intake_answers_bullets_html(
+                sample_answers,
+                extra_skip_keys=frozenset({"photos", "yard_photos", "attachments"}),
+            ),
+            "client_photo_block": format_admin_intake_client_photos_html(
+                client_yard_photo_urls_from_flat_answers(sample_answers)
+            ),
         }
     if template_name == "client_intake_confirmation":
         return {
@@ -731,6 +741,21 @@ def _append_client_photo_urls_from_value(raw: Any, seen: set[str], out: list[str
         out.append(raw)
 
 
+def client_yard_photo_urls_from_flat_answers(answers: dict[str, Any] | None) -> list[str]:
+    """Deduped client image URLs from a flat answers dict (same order as admin lead detail).
+
+    Questionnaire uploads are stored on ``photos`` (and mirrored to ``yard_photos`` on submit);
+    contact form uses ``attachments``.
+    """
+    if not answers or not isinstance(answers, dict):
+        return []
+    seen: set[str] = set()
+    out: list[str] = []
+    for key in ("yard_photos", "photos", "attachments"):
+        _append_client_photo_urls_from_value(answers.get(key), seen, out)
+    return out
+
+
 def client_yard_photo_urls(row: dict[str, Any] | None) -> list[str]:
     """Client-submitted image URLs from answers (intake + contact).
 
@@ -738,13 +763,34 @@ def client_yard_photo_urls(row: dict[str, Any] | None) -> list[str]:
     when possible. We read both, plus contact `attachments`. Does not use `admin_photos`.
     """
     answers = intake_answers(row) if row else {}
-    if not isinstance(answers, dict):
-        return []
-    seen: set[str] = set()
-    out: list[str] = []
-    for key in ("yard_photos", "photos", "attachments"):
-        _append_client_photo_urls_from_value(answers.get(key), seen, out)
-    return out
+    return client_yard_photo_urls_from_flat_answers(answers)
+
+
+def format_admin_intake_client_photos_html(urls: list[str]) -> str:
+    """Admin intake email: Cloudinary links (like contact) plus thumbnails (like admin lead detail)."""
+    if not urls:
+        return "<p><strong>Uploaded yard photos:</strong> <em>None</em></p>"
+    link_items = "".join(
+        f'<li><a href="{escape_html(u)}" target="_blank" rel="noopener noreferrer">{escape_html(u)}</a></li>'
+        for u in urls
+    )
+    thumbs = "".join(
+        f'<a href="{escape_html(u)}" target="_blank" rel="noopener noreferrer">'
+        f'<img src="{escape_html(u)}" alt="Client yard photo" width="160" height="120" '
+        'style="object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:4px" /></a>'
+        for u in urls
+    )
+    return (
+        "<h3>Uploaded yard photos (Cloudinary)</h3>"
+        "<p><strong>Direct links:</strong></p>"
+        "<ul>"
+        + link_items
+        + "</ul>"
+        '<p style="margin-top:12px"><strong>Preview:</strong></p>'
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start">'
+        + thumbs
+        + "</div>"
+    )
 
 
 def intake_admin_photo_urls(row: dict[str, Any] | None) -> list[str]:
@@ -1062,7 +1108,11 @@ def send_admin_intake_email(payload: dict[str, Any]) -> bool:
             raw_answers = aj.get("answers")
         if not isinstance(raw_answers, dict):
             raw_answers = {}
-    answer_bullets = format_intake_answers_bullets_html(raw_answers)
+    photo_skip = frozenset({"photos", "yard_photos", "attachments"})
+    answer_bullets = format_intake_answers_bullets_html(raw_answers, extra_skip_keys=photo_skip)
+    client_photo_block = format_admin_intake_client_photos_html(
+        client_yard_photo_urls_from_flat_answers(raw_answers)
+    )
     token_line = ""
     if payload.get("public_token"):
         token_line = f"<p><strong>Public token:</strong> {escape_html(payload['public_token'])}</p>"
@@ -1078,6 +1128,7 @@ def send_admin_intake_email(payload: dict[str, Any]) -> bool:
             "entry_intent": escape_html(payload.get("entry_intent", "")),
             "source_page": escape_html(payload.get("source_page", "")),
             "answer_bullets": answer_bullets,
+            "client_photo_block": client_photo_block,
         },
     )
     resend.Emails.send(
@@ -1841,7 +1892,6 @@ def _render_admin_lead_detail_page(row: dict[str, Any], events: list[dict[str, A
     source = (row.get("source") or "intake").strip().lower()
     lead_ref = row.get("ref_code") or f"NG-{row.get('id')}"
     message_html = ""
-    message_html = ""
     contact_message_skip: frozenset[str] = frozenset()
     if source == "contact":
         message_html = (
@@ -1860,6 +1910,16 @@ def _render_admin_lead_detail_page(row: dict[str, Any], events: list[dict[str, A
         )
         or "<p>No client photos.</p>"
     )
+    client_photo_links_html = ""
+    if client_photo_urls:
+        client_photo_links_html = (
+            "<p class='photo-links-label'><strong>Cloudinary links</strong> (same as contact attachments):</p><ul class='photo-link-list'>"
+            + "".join(
+                f'<li><a href="{escape_html(url)}" target="_blank" rel="noopener noreferrer">{escape_html(url)}</a></li>'
+                for url in client_photo_urls
+            )
+            + "</ul>"
+        )
     admin_photos_html = (
         "".join(
             f"<a href='{escape_html(url)}' target='_blank' rel='noopener'><img src='{escape_html(url)}' alt='Admin-added photo' /></a>"
@@ -1904,6 +1964,8 @@ body{{font-family:Inter,Arial,sans-serif;margin:24px;color:#2c2c28}}a{{color:#44
 table{{width:100%;border-collapse:collapse}}td{{padding:8px;border-bottom:1px solid #f0eadf;vertical-align:top}}
 .photos{{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}}.photos img{{width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #ddd}}
 .photo-block{{margin-top:12px}}.photo-block h4{{margin:0 0 6px;font-size:14px;color:#555}}
+.photo-links-label{{margin:10px 0 4px;font-size:13px;color:#555}}
+.photo-link-list{{font-size:12px;margin:0 0 8px;padding-left:18px;word-break:break-all}}
 textarea{{width:100%;min-height:120px}}button{{padding:8px 12px}}.timeline li{{margin-bottom:10px}}
 </style></head><body>
 <p><a href='/admin/leads'>← Back to leads</a></p>
@@ -1915,7 +1977,7 @@ textarea{{width:100%;min-height:120px}}button{{padding:8px 12px}}.timeline li{{m
     {message_html}
     <table>{answers_html}</table>
     <h3>Photos</h3>
-    <div class='photo-block'><h4>Client Photos</h4><div class='photos'>{client_photos_html}</div></div>
+    <div class='photo-block'><h4>Client Photos</h4><div class='photos'>{client_photos_html}</div>{client_photo_links_html}</div>
     <div class='photo-block'><h4>Added by You</h4><div class='photos'>{admin_photos_html}</div></div>
     <h3>Add Photo</h3>
     <p><input type='file' id='adminPhotoFile' accept='image/*' /> <button type='button' onclick='uploadAdminPhoto()'>Upload</button></p>

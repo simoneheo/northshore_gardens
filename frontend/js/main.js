@@ -426,19 +426,29 @@ if (intakeMount) {
 
   function renderBody(step) {
     switch (step.type) {
-      case 'upload':
+      case 'upload': {
+        const maxFiles = 5;
+        const chosen = Array.isArray(state.answers[step.key]) ? state.answers[step.key] : [];
+        const listHtml = chosen.length
+          ? chosen
+              .map(
+                (file, idx) => `
+          <div class="upload-file-row">
+            <span class="upload-file-name">${escapeHtml(file.name)}</span>
+            <button type="button" class="button button-ghost upload-remove" data-remove-intake-upload="${idx}">Remove</button>
+          </div>`
+              )
+              .join('')
+          : `<p class="upload-empty-hint">No files selected yet. Pick images below — you can add more (up to ${maxFiles}) or remove any file before submitting.</p>`;
         return `
           <div class="upload-box">
-            <strong>Add up to 5 photos</strong>
+            <strong>Add up to ${maxFiles} photos</strong>
             <p class="question-hint">Photos help our designers give more specific ideas.</p>
             <input id="uploadStepInput" type="file" accept="image/*" multiple />
-            <div class="upload-thumbs">
-              ${Array.isArray(state.answers[step.key]) && state.answers[step.key].length
-                ? state.answers[step.key].map(file => `<span class="upload-thumb">${escapeHtml(file.name)}</span>`).join('')
-                : '<span class="upload-thumb">No files selected yet</span>'}
-            </div>
+            <div class="upload-file-list">${listHtml}</div>
           </div>
         `;
+      }
       case 'textarea':
         return `
           <div class="inline-fields">
@@ -465,13 +475,33 @@ if (intakeMount) {
   function attachStepEvents(step) {
     const uploadInput = document.getElementById('uploadStepInput');
     if (uploadInput) {
+      const maxFiles = 5;
       uploadInput.addEventListener('change', (event) => {
-        const files = Array.from(event.target.files || []).slice(0, 5);
-        state.answers[step.key] = files;
+        const incoming = Array.from(event.target.files || [])
+          .filter((file) => (file.type || '').toLowerCase().startsWith('image/'))
+          .slice(0, maxFiles);
+        const cur = Array.isArray(state.answers[step.key]) ? [...state.answers[step.key]] : [];
+        const room = maxFiles - cur.length;
+        state.answers[step.key] = room > 0 ? [...cur, ...incoming.slice(0, room)] : cur;
+        event.target.value = '';
         state.error = '';
         render();
       });
     }
+
+    intakeMount.querySelectorAll('[data-remove-intake-upload]').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        const raw =
+          (event.currentTarget && event.currentTarget.getAttribute('data-remove-intake-upload')) || '';
+        const idx = parseInt(raw, 10);
+        const arr = Array.isArray(state.answers[step.key]) ? [...state.answers[step.key]] : [];
+        if (!Number.isFinite(idx) || idx < 0 || idx >= arr.length) return;
+        arr.splice(idx, 1);
+        state.answers[step.key] = arr;
+        state.error = '';
+        render();
+      });
+    });
 
     const textStepField = document.getElementById('textStepField');
     if (textStepField) {
@@ -604,6 +634,56 @@ const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   const statusNode = document.getElementById('contactStatus');
   const submitButton = document.getElementById('contactSubmit');
+  const attachmentInput = document.getElementById('contactAttachments');
+  const attachmentListEl = document.getElementById('contactAttachmentList');
+  const maxContactFiles = 5;
+  /** @type {File[]} */
+  let contactFiles = [];
+
+  function escapeContactHtml(value) {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function renderContactAttachmentList() {
+    if (!attachmentListEl) return;
+    if (!contactFiles.length) {
+      attachmentListEl.innerHTML = '';
+      return;
+    }
+    attachmentListEl.innerHTML = `<p class="attachment-list-label">Selected photos (${contactFiles.length}/${maxContactFiles})</p>${contactFiles
+      .map(
+        (file, idx) => `<div class="contact-file-row">
+        <span class="contact-file-name">${escapeContactHtml(file.name)}</span>
+        <button type="button" class="contact-remove-file" data-contact-remove="${idx}">Remove</button>
+      </div>`
+      )
+      .join('')}`;
+    attachmentListEl.querySelectorAll('[data-contact-remove]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-contact-remove') || '', 10);
+        if (!Number.isFinite(i) || i < 0 || i >= contactFiles.length) return;
+        contactFiles.splice(i, 1);
+        renderContactAttachmentList();
+      });
+    });
+  }
+
+  attachmentInput?.addEventListener('change', () => {
+    const incoming = Array.from(attachmentInput.files || [])
+      .filter((file) => (file.type || '').toLowerCase().startsWith('image/'))
+      .slice(0, maxContactFiles);
+    const room = maxContactFiles - contactFiles.length;
+    if (room > 0) {
+      contactFiles = [...contactFiles, ...incoming.slice(0, room)].slice(0, maxContactFiles);
+    }
+    attachmentInput.value = '';
+    renderContactAttachmentList();
+  });
 
   function setContactStatus(message, isError = false, isSuccess = false) {
     if (!statusNode) return;
@@ -618,8 +698,6 @@ if (contactForm) {
     const name = document.getElementById('contactName')?.value?.trim() || '';
     const email = document.getElementById('contactEmail')?.value?.trim() || '';
     const message = document.getElementById('contactMessage')?.value?.trim() || '';
-    const attachmentInput = document.getElementById('contactAttachments');
-    const files = Array.from(attachmentInput?.files || []).slice(0, 5);
 
     if (!name || !email || !message) {
       setContactStatus('Please complete name, email, and message.', true);
@@ -630,7 +708,7 @@ if (contactForm) {
     formData.append('name', name);
     formData.append('email', email);
     formData.append('message', message);
-    files.forEach((file) => formData.append('attachments', file));
+    contactFiles.forEach((file) => formData.append('attachments', file));
 
     submitButton.disabled = true;
     submitButton.textContent = 'Sending...';
@@ -661,6 +739,8 @@ if (contactForm) {
         : `<strong>${successTitle}</strong>`;
       setContactStatus(html, false, true);
       contactForm.reset();
+      contactFiles = [];
+      renderContactAttachmentList();
     } catch (error) {
       setContactStatus(error instanceof Error ? error.message : 'Unable to send message right now.', true);
     } finally {
