@@ -39,7 +39,13 @@
         <a href="./index.html#how-it-works" data-edit="navHowItWorks">How It Works</a>
         <a href="./index.html#difference" data-edit="navWhyUs">Why Us</a>
         <a href="./index.html#packages" data-edit="navPackages">Packages</a>
-        <a class="button button-sm" href="./intake.html" data-edit="navCta">Get Started</a>
+        <a
+          class="button button-sm"
+          href="./intake.html"
+          data-edit="navCta"
+          data-intake-entry-intent="get_started"
+          data-intake-source-page="plans_page"
+        >Get Started</a>
       </nav>
     </div>
   </header>
@@ -98,7 +104,7 @@
             </div>
           </article>
         </div>
-        <p class="plans-note">Questions first? Email us at <a href="mailto:hello@northshoregardens.studio">hello@northshoregardens.studio</a>.</p>
+        <p class="plans-note">Questions? Email us at <a href="mailto:hello@northshoregardens.studio">hello@northshoregardens.studio</a>.</p>
       </div>
     </section>
   </main>
@@ -112,6 +118,8 @@
   </footer>
 
   <script src="/js/app-config.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/lead-intent.js"></script>
   <script src="/js/site-data.js"></script>
   <script src="/js/render.js"></script>
   <script src="/js/main.js"></script>

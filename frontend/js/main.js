@@ -106,8 +106,11 @@ function initFloatingContactWidget() {
   }
 
   trigger?.addEventListener('click', () => {
-    const open = mount.getAttribute('data-open') === 'true';
-    setOpen(!open);
+    const wasOpen = mount.getAttribute('data-open') === 'true';
+    setOpen(!wasOpen);
+    if (!wasOpen && typeof window.trackNsgEvent === 'function') {
+      window.trackNsgEvent('click_talk_to_designer', { action: 'open_panel' });
+    }
   });
 
   closeButton?.addEventListener('click', () => setOpen(false));
@@ -163,9 +166,14 @@ function initFloatingContactWidget() {
         site.contactSuccessTitle ||
         "Thanks - we'll take a look and respond by email.";
       const okBody =
-        site.contactSuccessBody ||
-        "If you included a photo, that helps us give more specific ideas.";
-      setStatus(okTitle, 'success', okBody);
+        typeof site.contactSuccessBody === 'string' && site.contactSuccessBody.trim()
+          ? site.contactSuccessBody.trim()
+          : '';
+      if (okBody) {
+        setStatus(okTitle, 'success', okBody);
+      } else {
+        setStatus(okTitle, 'success');
+      }
       form.reset();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Unable to send message right now.', 'error');
@@ -203,11 +211,44 @@ document.addEventListener(
     }
 
     const entryIntent = a.getAttribute('data-intake-entry-intent') || 'unknown';
+    const analyticsCta = a.getAttribute('data-analytics-cta') || '';
+    if (typeof window.trackNsgEvent === 'function') {
+      if (analyticsCta === 'get_consultation') {
+        window.trackNsgEvent('click_get_consultation', {
+          entry_intent: entryIntent,
+          source_page: sourcePage,
+        });
+      } else {
+        window.trackNsgEvent('click_get_started', {
+          entry_intent: entryIntent,
+          source_page: sourcePage,
+        });
+      }
+    }
     e.preventDefault();
     if (typeof window.openIntakeWithIntent === 'function') {
       window.openIntakeWithIntent(entryIntent, sourcePage, href);
     } else {
       window.location.assign(href);
+    }
+  },
+  true
+);
+
+document.addEventListener(
+  'click',
+  function (e) {
+    const a = e.target.closest('a');
+    if (!a || a.hash !== '#packages') return;
+    let ctaLocation = a.getAttribute('data-packages-analytics') || '';
+    if (!ctaLocation) {
+      const de = a.getAttribute('data-edit');
+      if (de === 'navPackages') ctaLocation = 'nav';
+      else if (de === 'heroTertiaryCta') ctaLocation = 'hero';
+      else ctaLocation = 'other';
+    }
+    if (typeof window.trackNsgEvent === 'function') {
+      window.trackNsgEvent('click_packages_cta', { cta_location: ctaLocation });
     }
   },
   true
@@ -612,8 +653,13 @@ if (contactForm) {
       }
 
       const successTitle = window.SITE_DATA?.contactSuccessTitle || 'Thanks, your message was sent.';
-      const successBody = window.SITE_DATA?.contactSuccessBody || 'We received your message and will follow up shortly.';
-      setContactStatus(`<strong>${successTitle}</strong><br>${successBody}`, false, true);
+      const rawBody = window.SITE_DATA?.contactSuccessBody;
+      const successBody =
+        typeof rawBody === 'string' && rawBody.trim() ? rawBody.trim() : '';
+      const html = successBody
+        ? `<strong>${successTitle}</strong><br>${successBody}`
+        : `<strong>${successTitle}</strong>`;
+      setContactStatus(html, false, true);
       contactForm.reset();
     } catch (error) {
       setContactStatus(error instanceof Error ? error.message : 'Unable to send message right now.', true);

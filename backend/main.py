@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import secrets
 import sys
 import traceback
@@ -294,6 +295,146 @@ def escape_html(value: Any) -> str:
     )
 
 
+def _humanize_intake_answer_key(key: str) -> str:
+    label = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", key or "")
+    label = label.replace("_", " ").strip()
+    return label.title() if label else key
+
+
+def _as_string_list(val: Any) -> list[str]:
+    if isinstance(val, list):
+        return [str(v).strip() for v in val if v is not None and str(v).strip()]
+    if isinstance(val, str) and val.strip():
+        return [val.strip()]
+    return []
+
+
+def _is_empty_intake_answer(val: Any) -> bool:
+    if val is None:
+        return True
+    if isinstance(val, str) and not val.strip():
+        return True
+    if isinstance(val, list) and not _as_string_list(val):
+        return True
+    return False
+
+
+def _intake_photo_keys_to_skip(answers: dict[str, Any]) -> set[str]:
+    """Hide duplicate empty photo slots; drop yard_photos when identical to photos."""
+    skip: set[str] = set()
+    p = _as_string_list(answers.get("photos"))
+    y = _as_string_list(answers.get("yard_photos"))
+    if set(p) == set(y):
+        if p:
+            skip.add("yard_photos")
+        else:
+            skip.add("photos")
+            skip.add("yard_photos")
+    return skip
+
+
+def _intake_answer_key_order(answers: dict[str, Any]) -> list[str]:
+    """Match questionnaire.yaml step order when readable; append any extra keys sorted."""
+    ordered: list[str] = []
+    path = _REPO_ROOT / "questionnaire.yaml"
+    if path.is_file():
+        try:
+            import yaml as yaml_module  # type: ignore[import-not-found]
+        except ImportError:
+            yaml_module = None
+        if yaml_module is not None:
+            try:
+                data = yaml_module.safe_load(path.read_text(encoding="utf-8"))
+                intake = data.get("intake") if isinstance(data, dict) else None
+                steps = intake.get("steps") if isinstance(intake, dict) else None
+                if isinstance(steps, list):
+                    for step in steps:
+                        if isinstance(step, dict) and isinstance(step.get("key"), str):
+                            k = step["key"].strip()
+                            if k and k in answers:
+                                ordered.append(k)
+            except Exception:
+                ordered = []
+    seen = set(ordered)
+    for k in sorted(answers.keys()):
+        if k not in seen:
+            ordered.append(k)
+            seen.add(k)
+    return ordered
+
+
+def _format_intake_answer_value_html(val: Any) -> str:
+    if isinstance(val, list):
+        parts_raw = _as_string_list(val)
+        if not parts_raw:
+            return "—"
+        parts_html: list[str] = []
+        for u in parts_raw:
+            if u.startswith(("http://", "https://")):
+                e = escape_html(u)
+                parts_html.append(f'<a href="{e}" target="_blank" rel="noopener noreferrer">{e}</a>')
+            else:
+                parts_html.append(escape_html(u))
+        if len(parts_html) == 1:
+            return parts_html[0]
+        return "<ul>" + "".join(f"<li>{p}</li>" for p in parts_html) + "</ul>"
+    if isinstance(val, str):
+        return escape_html(val.strip()).replace("\n", "<br>")
+    if isinstance(val, (int, float)) and not isinstance(val, bool):
+        return escape_html(str(val))
+    if isinstance(val, dict):
+        try:
+            return escape_html(json.dumps(val, ensure_ascii=False, indent=2))
+        except (TypeError, ValueError):
+            return escape_html(str(val))
+    return escape_html(str(val))
+
+
+def format_intake_answers_bullets_html(answers: dict[str, Any]) -> str:
+    """HTML <ul> of questionnaire answers for admin email (values from stored answers_json)."""
+    if not isinstance(answers, dict) or not answers:
+        return "<ul><li><em>No questionnaire answers.</em></li></ul>"
+    skip = _intake_photo_keys_to_skip(answers)
+    items: list[str] = []
+    for key in _intake_answer_key_order(answers):
+        if key in skip:
+            continue
+        val = answers.get(key)
+        if _is_empty_intake_answer(val):
+            continue
+        label = escape_html(_humanize_intake_answer_key(key))
+        inner = _format_intake_answer_value_html(val)
+        items.append(f"<li><strong>{label}:</strong> {inner}</li>")
+    if not items:
+        return "<ul><li><em>No questionnaire answers.</em></li></ul>"
+    return "<ul>" + "".join(items) + "</ul>"
+
+
+def format_intake_answers_table_rows_html(
+    answers: dict[str, Any],
+    *,
+    skip_keys: frozenset[str] | set[str] | None = None,
+) -> str:
+    """HTML <tr> rows for admin lead detail: same order/labels/value formatting as admin intake email."""
+    if not isinstance(answers, dict) or not answers:
+        return "<tr><td colspan='2'><em>No questionnaire answers.</em></td></tr>"
+    extra_skip = skip_keys or frozenset()
+    skip = _intake_photo_keys_to_skip(answers)
+    rows: list[str] = []
+    for key in _intake_answer_key_order(answers):
+        if key in skip or key in extra_skip:
+            continue
+        val = answers.get(key)
+        if _is_empty_intake_answer(val):
+            continue
+        label = escape_html(_humanize_intake_answer_key(key))
+        inner = _format_intake_answer_value_html(val)
+        rows.append(f"<tr><td><strong>{label}</strong></td><td>{inner}</td></tr>")
+    if not rows:
+        return "<tr><td colspan='2'><em>No questionnaire answers.</em></td></tr>"
+    return "\n".join(rows)
+
+
 class _SafeFormatDict(dict):
     def __missing__(self, key: str) -> str:
         return "{" + key + "}"
@@ -348,6 +489,21 @@ def render_email_template(template_name: str, context: dict[str, Any]) -> dict[s
 def sample_email_template_context(template_name: str) -> dict[str, Any]:
     """Sample values used by dev template preview endpoint."""
     if template_name == "admin_intake_notification":
+        sample_answers: dict[str, Any] = {
+            "name": "Jane Doe",
+            "email": "jane@example.com",
+            "yardGoal": "Front yard curb appeal",
+            "sunExposure": "Mixed sun and shade",
+            "nurseryBudget": "$1–3k",
+            "stylePreference": "Natural, structured",
+            "mustKeep": "Large oak near driveway",
+            "yardNotes": "Would like a more polished arrival feel.",
+            "photos": [
+                "https://example.com/photo-1.jpg",
+                "https://example.com/photo-2.jpg",
+            ],
+            "address": "Northbrook, IL",
+        }
         return {
             "client_name": "Jane Doe",
             "submitted_at_utc": "2026-04-17 18:30:00",
@@ -357,17 +513,7 @@ def sample_email_template_context(template_name: str) -> dict[str, Any]:
             "client_zip": "60062",
             "entry_intent": "quick_ideas",
             "source_page": "hero",
-            "improve": "Front yard curb appeal",
-            "off_value": "Feels empty near walkway",
-            "off_other": "Need lower maintenance planting.",
-            "look_value": "Natural, structured, calming",
-            "sun_value": "Mixed sun and shade",
-            "change_size": "Keep footprint similar",
-            "notes": "Would like a more polished arrival feel.",
-            "photo_items": (
-                '<li><a href="https://example.com/photo-1.jpg">https://example.com/photo-1.jpg</a></li>'
-                '<li><a href="https://example.com/photo-2.jpg">https://example.com/photo-2.jpg</a></li>'
-            ),
+            "answer_bullets": format_intake_answers_bullets_html(sample_answers),
         }
     if template_name == "client_intake_confirmation":
         return {
@@ -867,10 +1013,14 @@ def send_admin_intake_email(payload: dict[str, Any]) -> bool:
         return False
     ensure_email_service()
 
-    photo_items = "".join(
-        f'<li><a href="{url}" target="_blank" rel="noopener noreferrer">{url}</a></li>'
-        for url in payload["photo_urls"]
-    )
+    raw_answers = payload.get("answers")
+    if not isinstance(raw_answers, dict):
+        aj = payload.get("answers_json")
+        if isinstance(aj, dict):
+            raw_answers = aj.get("answers")
+        if not isinstance(raw_answers, dict):
+            raw_answers = {}
+    answer_bullets = format_intake_answers_bullets_html(raw_answers)
     token_line = ""
     if payload.get("public_token"):
         token_line = f"<p><strong>Public token:</strong> {escape_html(payload['public_token'])}</p>"
@@ -885,14 +1035,7 @@ def send_admin_intake_email(payload: dict[str, Any]) -> bool:
             "client_zip": escape_html(payload.get("client_zip") or "—"),
             "entry_intent": escape_html(payload.get("entry_intent", "")),
             "source_page": escape_html(payload.get("source_page", "")),
-            "improve": escape_html(payload.get("improve") or "—"),
-            "off_value": escape_html(payload.get("off_value") or "—"),
-            "off_other": escape_html(payload.get("off_other") or "—"),
-            "look_value": escape_html(payload.get("look_value") or "—"),
-            "sun_value": escape_html(payload.get("sun_value") or "—"),
-            "change_size": escape_html(payload.get("change_size") or "—"),
-            "notes": escape_html(payload.get("notes") or "—"),
-            "photo_items": photo_items,
+            "answer_bullets": answer_bullets,
         },
     )
     resend.Emails.send(
@@ -1626,21 +1769,18 @@ def _render_admin_lead_detail_page(row: dict[str, Any], events: list[dict[str, A
     source = (row.get("source") or "intake").strip().lower()
     lead_ref = row.get("ref_code") or f"NG-{row.get('id')}"
     message_html = ""
+    message_html = ""
+    contact_message_skip: frozenset[str] = frozenset()
     if source == "contact":
         message_html = (
             "<p><strong>Message:</strong><br>"
             + escape_html(answers.get("message") or "—")
             + "</p>"
         )
-    answers_items = []
-    for key in sorted(answers.keys()):
-        value = answers.get(key)
-        if isinstance(value, list):
-            value = ", ".join(str(v) for v in value)
-        answers_items.append(
-            f"<tr><td><strong>{escape_html(key)}</strong></td><td>{escape_html(value or '—')}</td></tr>"
-        )
-    answers_html = "\n".join(answers_items) or "<tr><td colspan='2'>No questionnaire answers.</td></tr>"
+        contact_message_skip = frozenset({"message"})
+    answers_html = format_intake_answers_table_rows_html(
+        answers, skip_keys=contact_message_skip
+    )
     client_photos_html = (
         "".join(
             f"<a href='{escape_html(url)}' target='_blank' rel='noopener'><img src='{escape_html(url)}' alt='Client photo' /></a>"

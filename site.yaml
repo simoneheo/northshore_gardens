@@ -14,7 +14,7 @@ hero:
 
 contact:
   title: Tell us what you're thinking about.
-  body: Send a description or photos of your yard. Our designers will take a look and reach out. 
+  body: It helps if you send a description or photos of your yard. Our designers will take a look and reach out. 
   trust: No sales pressure. No spam.
   form:
     message_label: Message
@@ -23,7 +23,6 @@ contact:
     submit_label: Send Message
   success:
     title: Thank you! We'll get back to you as soon as possible.
-    body: Photos help us give more specific ideas. Feel free to send more details anytime.
 
 gallery:
   title: Front yard design concepts
@@ -67,7 +66,7 @@ why_this_is_different:
 packages:
   eyebrow: Packages
   title: Every design is by a local designer. 
-  intro: Start with a consultation. Choose a plan when you're ready to move forward.
+  intro: Start with a free consultation. Choose a plan when you're ready to move forward.
   cta: Get Consultation
   signature:
     label: Most homeowners choose this

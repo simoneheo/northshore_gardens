@@ -77,7 +77,14 @@ function wireGalleryMoreToggle() {
 
   setExpanded(false);
   btn.onclick = () => {
-    setExpanded(btn.getAttribute("aria-expanded") !== "true");
+    const nextExpanded = btn.getAttribute("aria-expanded") !== "true";
+    setExpanded(nextExpanded);
+    if (
+      nextExpanded &&
+      typeof window.trackNsgEvent === "function"
+    ) {
+      window.trackNsgEvent("gallery_show_more", { section: "gallery" });
+    }
   };
 }
 

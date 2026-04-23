@@ -6,4 +6,5 @@ psycopg-pool
 resend
 cloudinary
 python-multipart
+pyyaml
 stripe

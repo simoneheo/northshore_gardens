@@ -14,7 +14,7 @@ intake:
       title: What are you hoping to improve?
       hint: A sentence or two is perfect 
       required: false
-      placeholder: Front beds, curb appeal, screening, not sure yet
+      placeholder: Front yard, low maintenance, screening, not sure yet
     - key: sunExposure
       type: textarea
       label: Step 3
@@ -45,7 +45,7 @@ intake:
       label: Step 7
       title: Tell us more about your yard or goals.
       required: false
-      placeholder: Anything else you want to share (optional)
+      placeholder: Anything else you want to share or inspiration links (optional)
     - key: photos
       type: upload
       label: Step 8

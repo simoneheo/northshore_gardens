@@ -16,6 +16,7 @@
     "final_cta",
     "header",
     "mobile_menu",
+    "plans_page",
     "unknown",
   ]);
 

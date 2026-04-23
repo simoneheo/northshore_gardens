@@ -1,4 +1,4 @@
 {
   "subject": "We received your intake",
-  "html": "<p>Dear {client_name},</p>\n<p>Thank you for reaching out to Northshore Gardens Studio. We look forward to learning about your space.</p>\n<p>We’ve received your intake. Our designers will review it and follow up with tailored recommendations. In the meantime, you’re welcome to reply to this email with any additional details. Sharing photos of your yard is especially helpful.</p>\n<p>Warm regards,<br>Northshore Gardens Studio</p>"
+  "html": "<p>Dear {client_name},</p>\n<p>Thank you for reaching out to Northshore Gardens Studio. We look forward to learning about your space.</p>\n<p>Our designers will review your intake and follow up with concepts for your yard. In the meantime, you’re welcome to reply to this email with any additional details. Sharing photos of your yard is especially helpful.</p>\n<p>Warm regards,<br>Northshore Gardens Studio</p>"
 }

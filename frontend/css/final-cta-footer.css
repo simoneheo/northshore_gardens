@@ -15,8 +15,29 @@
 .microcopy { color: var(--text-muted); font-size: 18px; }
 
 .site-footer {
-  padding: 24px 0 40px;
+  padding: 0 0 40px;
 }
+
+/* Same heading stack as main sections (e.g. #packages .section-heading). */
+.site-footer-contact {
+  padding: 48px 0 32px;
+}
+.site-footer-contact .section-heading {
+  margin-bottom: 0;
+}
+/* Match packages intro: last paragraph in .section-heading uses base.css muted style. */
+.site-footer-contact .section-heading p:last-child {
+  max-width: 60ch;
+}
+.site-footer-contact .section-heading h2 a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-footer-contact .section-heading h2 a:hover {
+  color: var(--sage);
+}
+
 .footer-row {
   border-top: 1px solid var(--line);
   padding-top: 24px;
