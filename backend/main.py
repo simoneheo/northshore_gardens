@@ -131,28 +131,26 @@ def get_pool() -> ConnectionPool:
 def execute_with_auto_init(callback: Callable[[Any, Any], Any], operation_name: str) -> Any:
     """Run ``callback(conn, cur)``. On missing table, run ``init_db()`` once and retry.
 
-    If the retry still fails, the error is logged and re-raised.     Does not wrap ``init_db`` internals.
+    If the retry still fails, the error is logged and re-raised. Does not wrap ``init_db`` internals.
     """
-    get_pool()
+    pool = get_pool()
     try:
         with pool.connection() as conn:
             with conn.cursor() as cur:
                 return callback(conn, cur)
     except pg_errors.UndefinedTable:
-        logger.warning("Table missing, running init_db()")
-        logger.info("execute_with_auto_init: operation=%s", operation_name)
+        logger.warning(
+            f"[DB AUTO-INIT] Missing table during {operation_name}, running init_db()"
+        )
         init_db()
         try:
             with pool.connection() as conn:
                 with conn.cursor() as cur:
                     result = callback(conn, cur)
         except Exception:
-            logger.exception(
-                "execute_with_auto_init retry still failing [operation=%s]",
-                operation_name,
-            )
+            logger.exception(f"[DB AUTO-INIT] Retry failed for {operation_name}")
             raise
-        logger.info("execute_with_auto_init retry succeeded [operation=%s]", operation_name)
+        logger.info(f"[DB AUTO-INIT] Retry succeeded for {operation_name}")
         return result
 
 
@@ -2000,9 +1998,6 @@ def admin_root_redirect() -> RedirectResponse:
 
 @app.post("/admin/init-db")
 def admin_init_db() -> dict[str, Any]:
-    """Manual schema recovery. TODO: require admin authentication before production use."""
-    ts = datetime.utcnow().isoformat() + "Z"
-    logger.info("POST /admin/init-db invoked at %s", ts)
     init_db()
     return {"ok": True, "message": "Database initialized"}
 
