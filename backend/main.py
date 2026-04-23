@@ -353,6 +353,15 @@ def _is_empty_intake_answer(val: Any) -> bool:
     return False
 
 
+def _is_form_file_upload(value: Any) -> bool:
+    """True for multipart file parts (duck-type; avoids isinstance misses across Starlette/FastAPI)."""
+    if value is None or isinstance(value, str):
+        return False
+    if not hasattr(value, "filename"):
+        return False
+    return hasattr(value, "file") or callable(getattr(value, "read", None))
+
+
 def _intake_photo_keys_to_skip(answers: dict[str, Any]) -> set[str]:
     """Hide duplicate empty photo slots; drop yard_photos when identical to photos."""
     skip: set[str] = set()
@@ -536,7 +545,7 @@ def sample_email_template_context(template_name: str) -> dict[str, Any]:
             "stylePreference": "Natural, structured",
             "mustKeep": "Large oak near driveway",
             "yardNotes": "Would like a more polished arrival feel.",
-            "photos": [
+            "yard_photos": [
                 "https://example.com/photo-1.jpg",
                 "https://example.com/photo-2.jpg",
             ],
@@ -742,25 +751,27 @@ def _append_client_photo_urls_from_value(raw: Any, seen: set[str], out: list[str
 
 
 def client_yard_photo_urls_from_flat_answers(answers: dict[str, Any] | None) -> list[str]:
-    """Deduped client image URLs from a flat answers dict (same order as admin lead detail).
+    """Deduped client image URLs for admin email and lead detail.
 
-    Questionnaire uploads are stored on ``photos`` (and mirrored to ``yard_photos`` on submit);
-    contact form uses ``attachments``.
+    Intake submissions store images on ``yard_photos`` only. Contact uses ``attachments``.
+    Legacy intakes may still have ``photos`` only; those are read if ``yard_photos`` is empty.
     """
     if not answers or not isinstance(answers, dict):
         return []
     seen: set[str] = set()
     out: list[str] = []
-    for key in ("yard_photos", "photos", "attachments"):
+    for key in ("yard_photos", "attachments"):
         _append_client_photo_urls_from_value(answers.get(key), seen, out)
+    if not out:
+        _append_client_photo_urls_from_value(answers.get("photos"), seen, out)
     return out
 
 
 def client_yard_photo_urls(row: dict[str, Any] | None) -> list[str]:
     """Client-submitted image URLs from answers (intake + contact).
 
-    Intake uploads use the `photos` field; the backend also copies into `yard_photos`
-    when possible. We read both, plus contact `attachments`. Does not use `admin_photos`.
+    Reads ``yard_photos`` and ``attachments`` (and legacy ``photos`` when needed). Does not use
+    ``admin_photos``.
     """
     answers = intake_answers(row) if row else {}
     return client_yard_photo_urls_from_flat_answers(answers)
@@ -1371,7 +1382,7 @@ async def intake_submit(request: Request) -> dict[str, Any]:
         if key in metadata_fields:
             continue
         values = form.getlist(key)
-        upload_values = [v for v in values if isinstance(v, UploadFile)]
+        upload_values = [v for v in values if _is_form_file_upload(v)]
         if upload_values:
             if len(upload_values) > MAX_PHOTOS:
                 raise HTTPException(status_code=400, detail=f"Upload up to {MAX_PHOTOS} photos.")
@@ -1379,6 +1390,9 @@ async def intake_submit(request: Request) -> dict[str, Any]:
             continue
         first = values[0] if values else ""
         text_answers[key] = str(first or "").strip()
+
+    logger.info("[INTAKE] form keys: %s", list(form.keys()))
+    logger.info("[INTAKE] upload field keys (pending upload): %s", list(uploaded_urls_by_key.keys()))
 
     resolved_email = (text_answers.get("email") or "").strip()
     if not resolved_email:
@@ -1398,11 +1412,11 @@ async def intake_submit(request: Request) -> dict[str, Any]:
     resolved_zip = (text_answers.get("zip") or "").strip()
 
     client_slug = slugify(resolved_name)
-    folder = f"{CLOUDINARY_UPLOAD_FOLDER}/{month_bucket}/{client_slug}"
+    folder = f"questionnaire/{month_bucket}/{client_slug}".strip("/")
 
     uploaded_urls: list[str] = []
     for key in list(uploaded_urls_by_key.keys()):
-        files = [v for v in form.getlist(key) if isinstance(v, UploadFile)]
+        files = [v for v in form.getlist(key) if _is_form_file_upload(v)]
         for upload in files:
             content_type = (upload.content_type or "").lower()
             if not content_type.startswith("image/"):
@@ -1428,23 +1442,25 @@ async def intake_submit(request: Request) -> dict[str, Any]:
             except Exception as exc:
                 raise HTTPException(status_code=502, detail=f"Photo upload failed: {exc}") from exc
 
+    logger.info("[INTAKE] Cloudinary folder=%s", folder)
+    logger.info("[INTAKE] uploaded count=%s urls=%s", len(uploaded_urls), uploaded_urls)
+    if uploaded_urls_by_key and not uploaded_urls:
+        logger.warning(
+            "[INTAKE] No photos uploaded — upload keys %s were present but no files were stored; check FormData / read()",
+            list(uploaded_urls_by_key.keys()),
+        )
+
     answers_payload = {
         "schema_version": 2,
         "answers": {
             **text_answers,
-            **uploaded_urls_by_key,
             "email": resolved_email,
             "name": resolved_name,
+            "yard_photos": list(uploaded_urls),
         },
     }
     if resolved_address:
         answers_payload["answers"]["address"] = resolved_address
-    if "yard_photos" not in answers_payload["answers"]:
-        answers_payload["answers"]["yard_photos"] = (
-            uploaded_urls_by_key.get("photos")
-            or uploaded_urls_by_key.get("yard_photos")
-            or uploaded_urls
-        )
 
     payload = {
         "client_name": resolved_name,
