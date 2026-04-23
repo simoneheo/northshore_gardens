@@ -779,7 +779,7 @@ def ensure_stripe_webhook_config() -> None:
 
 
 def _checkout_session_metadata_dict(session: Any) -> dict[str, str]:
-    raw = session.get("metadata") if isinstance(session, dict) else getattr(session, "metadata", None)
+    raw = _checkout_session_field(session, "metadata")
     if not raw:
         return {}
     if isinstance(raw, dict):
@@ -795,11 +795,7 @@ def public_token_and_package_from_checkout_session(session: Any) -> tuple[str, s
     md = _checkout_session_metadata_dict(session)
     public_token = (md.get("public_token") or "").strip()
     package_id_raw = (md.get("package_id") or "").strip()
-    cref = (
-        (session.get("client_reference_id") or "").strip()
-        if isinstance(session, dict)
-        else (getattr(session, "client_reference_id", None) or "").strip()
-    )
+    cref = (_checkout_session_field(session, "client_reference_id") or "").strip()
     if "|" in cref:
         ct, cp = cref.split("|", 1)
         public_token = public_token or ct.strip()
@@ -1947,6 +1943,25 @@ def _checkout_session_field(session: Any, name: str) -> Any:
     return getattr(session, name, None)
 
 
+def conversion_exists_for_stripe_session(stripe_session_id: str | None) -> bool:
+    sid = (stripe_session_id or "").strip()
+    if not sid:
+        return False
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 1
+                FROM intake_conversions
+                WHERE stripe_session_id = %s
+                LIMIT 1;
+                """,
+                (sid,),
+            )
+            return cur.fetchone() is not None
+
+
 def _send_stripe_payment_confirmation_emails(
     public_token: str,
     package_id: str,
@@ -2053,7 +2068,7 @@ def post_record_conversion(
 
 @app.post("/stripe-webhook")
 async def stripe_webhook(request: Request) -> dict[str, bool]:
-    """Handle Stripe events and mark intake conversion by public_token."""
+    """Stripe webhook: signature-verified, idempotent, and fail-safe."""
     ensure_stripe_webhook_config()
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
@@ -2067,48 +2082,55 @@ async def stripe_webhook(request: Request) -> dict[str, bool]:
             secret=STRIPE_WEBHOOK_SECRET,
         )
     except Exception as exc:
+        # Signature/format errors must be rejected for Stripe validation.
         raise HTTPException(status_code=400, detail=f"Invalid webhook signature: {exc}") from exc
 
     event_type = _checkout_session_field(event, "type")
+    print(f"[stripe_webhook] event_type={event_type!r}")
     if event_type != "checkout.session.completed":
+        print("[stripe_webhook] skipped: unsupported event type")
         return {"ok": True}
 
-    event_data = _checkout_session_field(event, "data") or {}
-    if isinstance(event_data, dict):
-        session = event_data.get("object", {}) or {}
-    else:
-        session = _checkout_session_field(event_data, "object") or {}
-    public_token, package_id_raw = public_token_and_package_from_checkout_session(session)
-    if not public_token or not package_id_raw:
-        cref = session.get("client_reference_id") if isinstance(session, dict) else None
-        print(f"[stripe_webhook] missing public_token/package_id; client_reference_id={cref!r}")
-        raise HTTPException(
-            status_code=400,
-            detail="Missing public_token or package_id (metadata / client_reference_id).",
+    try:
+        event_data = _checkout_session_field(event, "data")
+        session = _checkout_session_field(event_data, "object") if event_data else None
+
+        session_id = _checkout_session_field(session, "id")
+        payment_status = _checkout_session_field(session, "payment_status") or "paid"
+        amount_total = _checkout_session_field(session, "amount_total")
+        currency = _checkout_session_field(session, "currency")
+
+        print(
+            "[stripe_webhook] checkout.session.completed"
+            f" session_id={session_id!r} payment_status={payment_status!r}"
         )
 
-    package_id = normalize_checkout_package_id(package_id_raw)
-    payment_status = session.get("payment_status") or "paid"
-    amount_total = session.get("amount_total")
-    currency = session.get("currency")
-    stripe_session_id = session.get("id")
+        if conversion_exists_for_stripe_session(session_id):
+            print(f"[stripe_webhook] skipped duplicate session_id={session_id!r}")
+            return {"ok": True}
 
-    record_intake_conversion(
-        public_token=public_token,
-        package_id=package_id,
-        stripe_session_id=stripe_session_id,
-        payment_status=payment_status,
-        amount_cents=amount_total,
-        currency=currency,
-    )
+        public_token, package_id_raw = public_token_and_package_from_checkout_session(session)
+        if not public_token or not package_id_raw:
+            cref = _checkout_session_field(session, "client_reference_id")
+            print(
+                "[stripe_webhook] skipped: missing public_token/package_id"
+                f" client_reference_id={cref!r} session_id={session_id!r}"
+            )
+            return {"ok": True}
 
-    _send_stripe_payment_confirmation_emails(
-        public_token,
-        package_id,
-        payment_status,
-        amount_total,
-        currency,
-        stripe_session_id,
-    )
+        package_id = normalize_checkout_package_id(package_id_raw)
 
-    return {"ok": True}
+        record_intake_conversion(
+            public_token=public_token,
+            package_id=package_id,
+            stripe_session_id=session_id,
+            payment_status=payment_status,
+            amount_cents=amount_total,
+            currency=currency,
+        )
+        print(f"[stripe_webhook] processed session_id={session_id!r}")
+        return {"ok": True}
+    except Exception:
+        print("[stripe_webhook] processing error (returning 200)")
+        traceback.print_exc()
+        return {"ok": True}
