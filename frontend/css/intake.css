@@ -1,5 +1,5 @@
 .intake-page {
-  background: linear-gradient(135deg, #3d4d2f 0%, #566845 44%, #f0e7d8 44%, #fcfbf7 100%);
+  background: linear-gradient(165deg, #354428 0%, #3d4d2f 32%, #4a5c3a 58%, #556844 100%);
   min-height: 100vh;
 }
 .intake-shell {
@@ -12,7 +12,8 @@
   padding: 42px clamp(24px, 5vw, 56px);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 28px;
 }
 .brand-on-dark .brand-mark {
   width: 44px;
@@ -224,3 +225,10 @@
 }
 .success-state h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }
 .success-state p { color: var(--text-muted); max-width: 54ch; }
+
+/* Intake success: extra space above aside eyebrow (desktop two-column layout) */
+@media (min-width: 1081px) {
+  .intake-success-page .intake-aside-copy > .eyebrow:first-child {
+    margin-top: 48px;
+  }
+}

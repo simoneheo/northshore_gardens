@@ -264,7 +264,7 @@ if (intakeMount) {
       type: 'upload',
       label: 'Step 4',
       title: 'Upload a photo of your yard (optional).',
-      hint: 'Quick phone photos are great. You can skip this and still submit.',
+      hint: 'You can skip this and reply to a follow-up email with more photos.',
       required: false,
     },
     {
@@ -368,7 +368,7 @@ if (intakeMount) {
       <div class="question-wrap">
         <p class="eyebrow">Northshore Gardens Intake</p>
         <h2>${step.title}</h2>
-        <p class="question-hint">${step.hint || ''}</p>
+        ${step.hint ? `<p class="question-hint">${escapeHtml(step.hint)}</p>` : ''}
         <div class="question-body">${renderBody(step)}</div>
         ${state.error ? `<p class="error-text">${escapeHtml(state.error)}</p>` : ''}
       </div>
@@ -389,7 +389,7 @@ if (intakeMount) {
         return `
           <div class="upload-box">
             <strong>Add up to 5 photos</strong>
-            <p class="question-hint">Quick phone photos are perfect, but totally optional.</p>
+            <p class="question-hint">Photos help our designers give more specific ideas.</p>
             <input id="uploadStepInput" type="file" accept="image/*" multiple />
             <div class="upload-thumbs">
               ${Array.isArray(state.answers[step.key]) && state.answers[step.key].length

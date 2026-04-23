@@ -7,7 +7,7 @@ window.QUESTIONNAIRE_CONFIG = {
         "type": "text",
         "label": "Step 1",
         "title": "What is your name?",
-        "hint": "We use this in our emails and to organize your photos.",
+        "hint": "We never send spam or share your information.",
         "required": true,
         "placeholder": "First and last name"
       },
@@ -16,42 +16,74 @@ window.QUESTIONNAIRE_CONFIG = {
         "type": "textarea",
         "label": "Step 2",
         "title": "What are you hoping to improve?",
-        "hint": "A sentence or two is perfect.",
+        "hint": "A sentence or two is perfect",
         "required": false,
-        "placeholder": "Front beds, entry feel, curb appeal..."
+        "placeholder": "Front beds, curb appeal, screening, not sure yet"
+      },
+      {
+        "key": "sunExposure",
+        "type": "textarea",
+        "label": "Step 3",
+        "title": "Do you know how much sun your yard gets?",
+        "required": false,
+        "placeholder": "Full sun, partial shade, filtered under canopy, not sure"
+      },
+      {
+        "key": "nurseryBudget",
+        "type": "textarea",
+        "label": "Step 4",
+        "title": "Do you have a rough plant budget in mind?",
+        "hint": "We will design within your nursery budget.",
+        "required": false,
+        "placeholder": "<$500, $1-3k, $3k+, not sure yet"
+      },
+      {
+        "key": "stylePreference",
+        "type": "textarea",
+        "label": "Step 5",
+        "title": "What kind of look do you like?",
+        "required": false,
+        "placeholder": "Low maintenance, cut flower garden, natural look, not sure"
+      },
+      {
+        "key": "mustKeep",
+        "type": "textarea",
+        "label": "Step 6",
+        "title": "Anything we should work around or keep?",
+        "required": false,
+        "placeholder": "Existing plants, trees, rabbits, HOA rules, not sure yet"
       },
       {
         "key": "yardNotes",
         "type": "textarea",
-        "label": "Step 3",
-        "title": "Tell us a little about your yard or goals.",
-        "hint": "Share anything helpful about style, maintenance, or what feels off.",
+        "label": "Step 7",
+        "title": "Tell us more about your yard or goals.",
         "required": false,
-        "placeholder": "Anything you want us to keep in mind..."
+        "placeholder": "Anything else you want to share (optional)"
       },
       {
         "key": "photos",
         "type": "upload",
-        "label": "Step 4",
-        "title": "Upload a photo of your yard (optional).",
-        "hint": "Quick phone photos are great. You can skip this and still submit.",
+        "label": "Step 8",
+        "title": "Upload photos of your yard (optional).",
+        "hint": "You can skip this and reply to a follow-up email with more photos.",
         "required": false
       },
       {
         "key": "address",
         "type": "text",
-        "label": "Step 5",
-        "title": "What is your address? (optional but helpful)",
+        "label": "Step 9",
+        "title": "What is your address? (optional)",
         "hint": "If easier, just include city and street.",
         "required": false,
-        "placeholder": "Optional address"
+        "placeholder": "Address"
       },
       {
         "key": "email",
         "type": "email",
-        "label": "Step 6",
+        "label": "Step 10",
         "title": "What is your email?",
-        "hint": "We'll send a thoughtful follow-up. No spam.",
+        "hint": "We'll send a follow-up email. No spam.",
         "required": true,
         "placeholder": "you@example.com"
       }
