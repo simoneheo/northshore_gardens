@@ -2,6 +2,36 @@ if (typeof window.renderHomepage === "function") {
   window.renderHomepage();
 }
 
+/** @param {File} file */
+function nsgFilePreviewKey(file) {
+  return `${file.name}:${file.size}:${file.lastModified}`;
+}
+
+/** @param {File} file @param {Map<string, string>} cache */
+function nsgGetPreviewUrl(file, cache) {
+  const k = nsgFilePreviewKey(file);
+  if (!cache.has(k)) {
+    cache.set(k, URL.createObjectURL(file));
+  }
+  return cache.get(k);
+}
+
+/** @param {File} file @param {Map<string, string>} cache */
+function nsgRevokePreviewUrl(file, cache) {
+  const k = nsgFilePreviewKey(file);
+  const u = cache.get(k);
+  if (u) {
+    URL.revokeObjectURL(u);
+    cache.delete(k);
+  }
+}
+
+/** @param {File[]} files @param {Map<string, string>} cache */
+function nsgRevokeAllPreviewUrls(files, cache) {
+  if (!Array.isArray(files) || !cache) return;
+  files.forEach((f) => nsgRevokePreviewUrl(f, cache));
+}
+
 function initFloatingContactWidget() {
   if (!window.APP_CONFIG || !document.body) return;
   if (document.body.classList.contains('intake-page') || document.body.classList.contains('contact-page')) return;
@@ -36,7 +66,8 @@ function initFloatingContactWidget() {
         </label>
         <label for="floatingContactAttachments"><span id="floatingContactUploadLabel"></span>
           <input id="floatingContactAttachments" class="attachment-input" type="file" name="attachments" accept="image/*" multiple />
-          <span class="floating-contact-hint">Up to 5 images.</span>
+          <span class="floating-contact-hint">Up to 5 images. Choose again to add more. Tap × on a thumbnail to remove.</span>
+          <div id="floatingContactAttachmentList" class="contact-attachment-list" aria-live="polite"></div>
         </label>
         <button type="submit" class="button" id="floatingContactSubmit">Send Message</button>
         <div class="floating-contact-status" id="floatingContactStatus" aria-live="polite"></div>
@@ -54,6 +85,49 @@ function initFloatingContactWidget() {
   const messageNode = document.getElementById('floatingContactMessage');
   const emailNode = document.getElementById('floatingContactEmail');
   const attachmentsNode = document.getElementById('floatingContactAttachments');
+  const floatingAttachmentList = document.getElementById('floatingContactAttachmentList');
+  const maxFloatingFiles = 5;
+  /** @type {File[]} */
+  let floatingSelectedFiles = [];
+  const floatingPreviewCache = new Map();
+
+  function renderFloatingAttachmentPreviews() {
+    if (!floatingAttachmentList) return;
+    if (!floatingSelectedFiles.length) {
+      floatingAttachmentList.innerHTML = '';
+      return;
+    }
+    floatingAttachmentList.innerHTML = `<div class="nsg-photo-preview-grid">${floatingSelectedFiles
+      .map((file, idx) => {
+        const src = nsgGetPreviewUrl(file, floatingPreviewCache);
+        return `<div class="nsg-photo-preview-cell"><img src="${src}" alt="" loading="lazy" /><button type="button" class="nsg-photo-preview-remove" data-floating-remove="${idx}" aria-label="Remove photo" title="Remove">×</button></div>`;
+      })
+      .join('')}</div>`;
+    floatingAttachmentList.querySelectorAll('[data-floating-remove]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-floating-remove') || '', 10);
+        if (!Number.isFinite(i) || i < 0 || i >= floatingSelectedFiles.length) return;
+        const [removed] = floatingSelectedFiles.splice(i, 1);
+        if (removed) nsgRevokePreviewUrl(removed, floatingPreviewCache);
+        renderFloatingAttachmentPreviews();
+      });
+    });
+  }
+
+  attachmentsNode?.addEventListener('change', () => {
+    const incoming = Array.from(attachmentsNode.files || [])
+      .filter((file) => (file.type || '').toLowerCase().startsWith('image/'))
+      .slice(0, maxFloatingFiles);
+    const room = maxFloatingFiles - floatingSelectedFiles.length;
+    if (room > 0) {
+      floatingSelectedFiles = [...floatingSelectedFiles, ...incoming.slice(0, room)].slice(
+        0,
+        maxFloatingFiles
+      );
+    }
+    attachmentsNode.value = '';
+    renderFloatingAttachmentPreviews();
+  });
 
   const site = window.SITE_DATA || {};
   const panelTitle = document.getElementById('floatingContactPanelTitle');
@@ -126,7 +200,6 @@ function initFloatingContactWidget() {
     const name = nameNode?.value?.trim() || '';
     const message = messageNode?.value?.trim() || '';
     const email = emailNode?.value?.trim() || '';
-    const files = Array.from(attachmentsNode?.files || []).slice(0, 5);
 
     if (!name || !message || !email) {
       setStatus('Please complete name, message, and email.', 'error');
@@ -142,7 +215,7 @@ function initFloatingContactWidget() {
     formData.append('name', name);
     formData.append('email', email);
     formData.append('message', message);
-    files.forEach((file) => formData.append('attachments', file));
+    floatingSelectedFiles.forEach((file) => formData.append('attachments', file));
 
     if (submitButton) {
       submitButton.disabled = true;
@@ -174,6 +247,9 @@ function initFloatingContactWidget() {
       } else {
         setStatus(okTitle, 'success');
       }
+      nsgRevokeAllPreviewUrls(floatingSelectedFiles, floatingPreviewCache);
+      floatingSelectedFiles = [];
+      renderFloatingAttachmentPreviews();
       form.reset();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Unable to send message right now.', 'error');
@@ -372,6 +448,8 @@ if (intakeMount) {
     submitting: false,
     submitted: false,
     leadIntent: defaultLead,
+    /** @type {Map<string, string>} */
+    filePreviewCache: new Map(),
   };
 
   function escapeHtml(value) {
@@ -429,17 +507,15 @@ if (intakeMount) {
       case 'upload': {
         const maxFiles = 5;
         const chosen = Array.isArray(state.answers[step.key]) ? state.answers[step.key] : [];
+        const cache = state.filePreviewCache;
         const listHtml = chosen.length
-          ? chosen
-              .map(
-                (file, idx) => `
-          <div class="upload-file-row">
-            <span class="upload-file-name">${escapeHtml(file.name)}</span>
-            <button type="button" class="button button-ghost upload-remove" data-remove-intake-upload="${idx}">Remove</button>
-          </div>`
-              )
-              .join('')
-          : `<p class="upload-empty-hint">No files selected yet. Pick images below — you can add more (up to ${maxFiles}) or remove any file before submitting.</p>`;
+          ? `<div class="nsg-photo-preview-grid">${chosen
+              .map((file, idx) => {
+                const src = nsgGetPreviewUrl(file, cache);
+                return `<div class="nsg-photo-preview-cell"><img src="${src}" alt="" loading="lazy" /><button type="button" class="nsg-photo-preview-remove" data-remove-intake-upload="${idx}" aria-label="Remove photo" title="Remove">×</button></div>`;
+              })
+              .join('')}</div>`
+          : `<p class="upload-empty-hint">No files selected yet. Pick images below — you can add more (up to ${maxFiles}). Tap × on a thumbnail to remove.</p>`;
         return `
           <div class="upload-box">
             <strong>Add up to ${maxFiles} photos</strong>
@@ -496,6 +572,8 @@ if (intakeMount) {
         const idx = parseInt(raw, 10);
         const arr = Array.isArray(state.answers[step.key]) ? [...state.answers[step.key]] : [];
         if (!Number.isFinite(idx) || idx < 0 || idx >= arr.length) return;
+        const removed = arr[idx];
+        if (removed) nsgRevokePreviewUrl(removed, state.filePreviewCache);
         arr.splice(idx, 1);
         state.answers[step.key] = arr;
         state.error = '';
@@ -546,6 +624,13 @@ if (intakeMount) {
 
       try {
         await submitIntake();
+        const uploadStep = steps.find((s) => s.type === 'upload');
+        if (uploadStep) {
+          const files = state.answers[uploadStep.key];
+          if (Array.isArray(files)) {
+            nsgRevokeAllPreviewUrls(files, state.filePreviewCache);
+          }
+        }
         if (window.NSGLeadIntent && typeof window.NSGLeadIntent.clearLeadIntent === 'function') {
           window.NSGLeadIntent.clearLeadIntent();
         }
@@ -639,15 +724,8 @@ if (contactForm) {
   const maxContactFiles = 5;
   /** @type {File[]} */
   let contactFiles = [];
-
-  function escapeContactHtml(value) {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
+  /** @type {Map<string, string>} */
+  const contactPreviewCache = new Map();
 
   function renderContactAttachmentList() {
     if (!attachmentListEl) return;
@@ -655,19 +733,18 @@ if (contactForm) {
       attachmentListEl.innerHTML = '';
       return;
     }
-    attachmentListEl.innerHTML = `<p class="attachment-list-label">Selected photos (${contactFiles.length}/${maxContactFiles})</p>${contactFiles
-      .map(
-        (file, idx) => `<div class="contact-file-row">
-        <span class="contact-file-name">${escapeContactHtml(file.name)}</span>
-        <button type="button" class="contact-remove-file" data-contact-remove="${idx}">Remove</button>
-      </div>`
-      )
-      .join('')}`;
+    attachmentListEl.innerHTML = `<p class="attachment-list-label">Selected photos (${contactFiles.length}/${maxContactFiles})</p><div class="nsg-photo-preview-grid">${contactFiles
+      .map((file, idx) => {
+        const src = nsgGetPreviewUrl(file, contactPreviewCache);
+        return `<div class="nsg-photo-preview-cell"><img src="${src}" alt="" loading="lazy" /><button type="button" class="nsg-photo-preview-remove" data-contact-remove="${idx}" aria-label="Remove photo" title="Remove">×</button></div>`;
+      })
+      .join('')}</div>`;
     attachmentListEl.querySelectorAll('[data-contact-remove]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const i = parseInt(btn.getAttribute('data-contact-remove') || '', 10);
         if (!Number.isFinite(i) || i < 0 || i >= contactFiles.length) return;
-        contactFiles.splice(i, 1);
+        const [removed] = contactFiles.splice(i, 1);
+        if (removed) nsgRevokePreviewUrl(removed, contactPreviewCache);
         renderContactAttachmentList();
       });
     });
@@ -738,9 +815,10 @@ if (contactForm) {
         ? `<strong>${successTitle}</strong><br>${successBody}`
         : `<strong>${successTitle}</strong>`;
       setContactStatus(html, false, true);
-      contactForm.reset();
+      nsgRevokeAllPreviewUrls(contactFiles, contactPreviewCache);
       contactFiles = [];
       renderContactAttachmentList();
+      contactForm.reset();
     } catch (error) {
       setContactStatus(error instanceof Error ? error.message : 'Unable to send message right now.', true);
     } finally {

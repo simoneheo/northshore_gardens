@@ -221,6 +221,58 @@ p { margin: 0; }
   font-size: 12px;
 }
 
+/* Shared: intake upload, contact page, floating “Talk to a designer” — local previews only (no upload until submit). */
+.nsg-photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.nsg-photo-preview-cell {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(90, 107, 74, 0.18);
+  background: #f4f1eb;
+}
+
+.nsg-photo-preview-cell img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  vertical-align: middle;
+}
+
+.nsg-photo-preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  line-height: 1;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nsg-photo-preview-remove:hover {
+  background: rgba(140, 40, 40, 0.88);
+}
+
+.floating-contact .contact-attachment-list {
+  margin-top: 8px;
+}
+
 .floating-contact-status {
   font-size: 14px;
 }

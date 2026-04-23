@@ -179,50 +179,8 @@
   width: 100%;
   margin-top: 14px;
 }
-.upload-thumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
-}
-.upload-thumb {
-  padding: 8px 10px;
-  border-radius: 14px;
-  background: rgba(90,107,74,0.08);
-  color: var(--sage-dark);
-  font-size: 13px;
-}
-
 .upload-file-list {
-  display: grid;
-  gap: 10px;
   margin-top: 16px;
-}
-
-.upload-file-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(90, 107, 74, 0.14);
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.upload-file-row .upload-file-name {
-  font-size: 13px;
-  color: var(--charcoal);
-  word-break: break-all;
-}
-
-.upload-file-row .upload-remove {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
 }
 
 .upload-file-list .upload-empty-hint {
