@@ -26,8 +26,8 @@ contact:
     body: Photos help us give more specific ideas. Feel free to send more details anytime.
 
 gallery:
-  title: Elevated curb appeal
-  intro: Small changes can transform how your home feels. 
+  title: Front yard design concepts
+  intro: Planned for practical installation, shaped by Northshore homes
 
 how_it_works:
   eyebrow: How It Works
@@ -35,33 +35,33 @@ how_it_works:
   intro: Work directly with a designer from the get-go. We keep it personal and low-pressure.
   steps:
     - title: Share your yard
-      body: Answer a few questions and upload photos of your space.
+      body: Answer a few questions about your yard and what you have in mind. 
     - title: Get ideas 
       body: We review your space and reply with initial concepts. 
     - title: Move forward
       body: Purchase a professional plan if it feels right. If not, keep the ideas.
     - title: Build design
-      body: Use it with a contractor or DIY. We help coordinate with a trusted installer if needed.
+      body: We help coordinate with a trusted installer. You can also work with your own contractor or DIY.
 
 why_this_is_different:
   eyebrow: Why We Are Different
   title: Focused on Design
-  body: Traditional landscaping is driven by installation incentives. We take a different approach. We create tailored yard plans with no inflated scope.
+  body: Traditional design-build firms are driven by installation incentives. We take a different approach. We create personalized yard plans, sized to your space and your goals.
   items:
     - title: Design-first approach
-      body: No installation incentives. Just a complete plan aligned with your vision and budget.
+      body: No construction incentives, no inflated scope. Just a plan aligned with your vision and budget.
 
     - title: Flat-fee and simple
       body: Clear pricing with no price creep and no pressure to expand.
 
     - title: Local to the Northshore
-      body: Designed around Midwestern conditions and plants available at local nurseries.
+      body: Designed to be built, with Midwest conditions and local guidelines in mind.
 
     - title: Personal touch
-      body: Work directly with a designer who responds with ideas tailored to your yard.
+      body: Work directly with a designer who responds with ideas tailored to your goals.
 
     - title: Fast turnaround
-      body: Receive a detailed professional plan in under 7 days.
+      body: Receive a detailed professional plan in under 7 days, ready to build.
 
 # Package prices: edit pricing.json at repo root, then run python3 build_site.py (Stripe uses the same file).
 packages:
