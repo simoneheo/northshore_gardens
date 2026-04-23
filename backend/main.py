@@ -1,9 +1,11 @@
 import json
+import logging
 import os
 import re
 import secrets
 import sys
 import traceback
+from collections.abc import Callable
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -19,6 +21,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
+from psycopg import errors as pg_errors
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
@@ -86,6 +89,8 @@ MAX_FILE_BYTES = 10 * 1024 * 1024
 BASE_DIR = Path(__file__).resolve().parent
 EMAIL_TEMPLATES_DIR = BASE_DIR / "email_templates"
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
 app.add_middleware(
@@ -123,8 +128,37 @@ def get_pool() -> ConnectionPool:
     return db_pool
 
 
+def execute_with_auto_init(callback: Callable[[Any, Any], Any], operation_name: str) -> Any:
+    """Run ``callback(conn, cur)``. On missing table, run ``init_db()`` once and retry.
+
+    If the retry still fails, the error is logged and re-raised.     Does not wrap ``init_db`` internals.
+    """
+    get_pool()
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                return callback(conn, cur)
+    except pg_errors.UndefinedTable:
+        logger.warning("Table missing, running init_db()")
+        logger.info("execute_with_auto_init: operation=%s", operation_name)
+        init_db()
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as cur:
+                    result = callback(conn, cur)
+        except Exception:
+            logger.exception(
+                "execute_with_auto_init retry still failing [operation=%s]",
+                operation_name,
+            )
+            raise
+        logger.info("execute_with_auto_init retry succeeded [operation=%s]", operation_name)
+        return result
+
+
 def init_db() -> None:
     """Create/extend tables and indexes. Safe for existing databases (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS)."""
+    logger.info("init_db: starting schema and backfills")
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor() as cur:
@@ -228,6 +262,8 @@ def init_db() -> None:
             )
             cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS intakes_ref_code_uidx ON intakes(ref_code);")
         conn.commit()
+
+    logger.info("init_db: completed successfully")
 
 
 def generate_public_token() -> str:
@@ -605,46 +641,49 @@ def update_intake_designer_status(intake_id: int, new_status: str) -> None:
     """Set designer_status on an intake (validated)."""
     if new_status not in ALLOWED_DESIGNER_STATUSES:
         raise HTTPException(status_code=400, detail=f"Invalid designer_status: {new_status}")
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT designer_status FROM intakes WHERE id = %s LIMIT 1;", (intake_id,))
-            row = cur.fetchone()
-            if not row:
-                raise HTTPException(status_code=404, detail="Intake not found.")
-            previous_status = row.get("designer_status")
-            cur.execute(
-                "UPDATE intakes SET designer_status = %s WHERE id = %s;",
-                (new_status, intake_id),
-            )
-        conn.commit()
+    previous_holder: dict[str, Any] = {}
+
+    def work(conn: Any, cur: Any) -> None:
+        cur.execute("SELECT designer_status FROM intakes WHERE id = %s LIMIT 1;", (intake_id,))
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Intake not found.")
+        previous_holder["status"] = row.get("designer_status")
+        cur.execute(
+            "UPDATE intakes SET designer_status = %s WHERE id = %s;",
+            (new_status, intake_id),
+        )
+
+    execute_with_auto_init(work, "update_intake_designer_status")
     add_lead_event(
         intake_id,
         "designer_status_updated",
-        {"from": previous_status, "to": new_status},
+        {"from": previous_holder.get("status"), "to": new_status},
     )
 
 
 def get_intake_by_public_token(public_token: str) -> dict[str, Any] | None:
     """Load full intake row by public_token (internal use)."""
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT * FROM intakes WHERE public_token = %s LIMIT 1;
-                """,
-                (public_token.strip(),),
-            )
-            return cur.fetchone()
+
+    def work(conn: Any, cur: Any) -> dict[str, Any] | None:
+        cur.execute(
+            """
+            SELECT * FROM intakes WHERE public_token = %s LIMIT 1;
+            """,
+            (public_token.strip(),),
+        )
+        return cur.fetchone()
+
+    return execute_with_auto_init(work, "get_intake_by_public_token")
 
 
 def get_intake_by_id(lead_id: int) -> dict[str, Any] | None:
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT * FROM intakes WHERE id = %s LIMIT 1;", (lead_id,))
-            return cur.fetchone()
+
+    def work(conn: Any, cur: Any) -> dict[str, Any] | None:
+        cur.execute("SELECT * FROM intakes WHERE id = %s LIMIT 1;", (lead_id,))
+        return cur.fetchone()
+
+    return execute_with_auto_init(work, "get_intake_by_id")
 
 
 def intake_answers(row: dict[str, Any] | None) -> dict[str, Any]:
@@ -723,33 +762,34 @@ def intake_admin_photo_urls(row: dict[str, Any] | None) -> list[str]:
 
 def add_lead_event(lead_id: int, event_type: str, event_data: dict[str, Any] | None = None) -> None:
     payload = event_data or {}
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO lead_events (lead_id, event_type, event_data)
-                VALUES (%s, %s, %s::jsonb);
-                """,
-                (lead_id, event_type, json.dumps(payload)),
-            )
-        conn.commit()
+
+    def work(conn: Any, cur: Any) -> None:
+        cur.execute(
+            """
+            INSERT INTO lead_events (lead_id, event_type, event_data)
+            VALUES (%s, %s, %s::jsonb);
+            """,
+            (lead_id, event_type, json.dumps(payload)),
+        )
+
+    execute_with_auto_init(work, "add_lead_event")
 
 
 def get_lead_events(lead_id: int) -> list[dict[str, Any]]:
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id, lead_id, event_type, event_data, created_at
-                FROM lead_events
-                WHERE lead_id = %s
-                ORDER BY created_at ASC;
-                """,
-                (lead_id,),
-            )
-            return cur.fetchall()
+
+    def work(conn: Any, cur: Any) -> list[dict[str, Any]]:
+        cur.execute(
+            """
+            SELECT id, lead_id, event_type, event_data, created_at
+            FROM lead_events
+            WHERE lead_id = %s
+            ORDER BY created_at ASC;
+            """,
+            (lead_id,),
+        )
+        return cur.fetchall()
+
+    return execute_with_auto_init(work, "get_lead_events")
 
 
 def intake_public_summary(row: dict[str, Any]) -> dict[str, Any]:
@@ -812,56 +852,60 @@ def record_intake_conversion(
         else DESIGNER_STATUS_CONVERTED_PREMIUM
     )
 
-    pool = get_pool()
-    inserted_new_conversion = False
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            conv: dict[str, Any] | None = None
-            if stripe_session_id:
-                cur.execute(
-                    """
-                    SELECT id, created_at FROM intake_conversions
-                    WHERE stripe_session_id = %s
-                    LIMIT 1;
-                    """,
-                    (stripe_session_id,),
-                )
-                conv = cur.fetchone()
-            if not conv:
-                cur.execute(
-                    """
-                    INSERT INTO intake_conversions (
-                        intake_id, package_id, stripe_session_id, payment_status,
-                        amount_cents, currency, purchased_at
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, NOW())
-                    RETURNING id, created_at;
-                    """,
-                    (
-                        intake_id,
-                        normalized_package_id,
-                        stripe_session_id,
-                        payment_status,
-                        amount_cents,
-                        currency,
-                    ),
-                )
-                conv = cur.fetchone()
-                inserted_new_conversion = True
+    inserted_holder: dict[str, Any] = {"inserted": False, "conv": None}
 
+    def conversion_work(conn: Any, cur: Any) -> None:
+        conv: dict[str, Any] | None = None
+        if stripe_session_id:
             cur.execute(
                 """
-                UPDATE intakes
-                SET
-                    converted_at = NOW(),
-                    stripe_session_id = COALESCE(%s, stripe_session_id),
-                    stripe_payment_status = %s,
-                    designer_status = %s
-                WHERE id = %s;
+                SELECT id, created_at FROM intake_conversions
+                WHERE stripe_session_id = %s
+                LIMIT 1;
                 """,
-                (stripe_session_id, payment_status, new_designer_status, intake_id),
+                (stripe_session_id,),
             )
-        conn.commit()
+            conv = cur.fetchone()
+        if not conv:
+            cur.execute(
+                """
+                INSERT INTO intake_conversions (
+                    intake_id, package_id, stripe_session_id, payment_status,
+                    amount_cents, currency, purchased_at
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, NOW())
+                RETURNING id, created_at;
+                """,
+                (
+                    intake_id,
+                    normalized_package_id,
+                    stripe_session_id,
+                    payment_status,
+                    amount_cents,
+                    currency,
+                ),
+            )
+            conv = cur.fetchone()
+            inserted_holder["inserted"] = True
+
+        cur.execute(
+            """
+            UPDATE intakes
+            SET
+                converted_at = NOW(),
+                stripe_session_id = COALESCE(%s, stripe_session_id),
+                stripe_payment_status = %s,
+                designer_status = %s
+            WHERE id = %s;
+            """,
+            (stripe_session_id, payment_status, new_designer_status, intake_id),
+        )
+        inserted_holder["conv"] = conv
+
+    execute_with_auto_init(conversion_work, "record_intake_conversion")
+    conv = inserted_holder["conv"]
+    inserted_new_conversion = bool(inserted_holder["inserted"])
+    assert conv is not None
 
     if inserted_new_conversion:
         try:
@@ -1193,9 +1237,27 @@ def slugify(value: str) -> str:
     return slug or "client"
 
 
+def _verify_intakes_table_after_init() -> None:
+    """Lightweight check that core table exists; re-run ``init_db`` if the probe fails."""
+    try:
+        pool = get_pool()
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1 FROM intakes LIMIT 1;")
+        logger.info("startup: intakes table verification succeeded")
+    except Exception as exc:
+        logger.warning(
+            "startup: intakes verification query failed (%s); re-running init_db()",
+            exc,
+        )
+        init_db()
+
+
 @app.on_event("startup")
 def startup() -> None:
+    logger.info("startup: beginning application initialization")
     init_db()
+    _verify_intakes_table_after_init()
     configure_cloudinary()
     configure_stripe()
 
@@ -1349,51 +1411,56 @@ async def intake_submit(request: Request) -> dict[str, Any]:
         "answers": answers_payload.get("answers", {}),
     }
 
-    pool = get_pool()
-    public_token = ""
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            for _ in range(40):
-                candidate = generate_public_token()
-                cur.execute(
-                    "SELECT 1 FROM intakes WHERE public_token = %s LIMIT 1;",
-                    (candidate,),
-                )
-                if cur.fetchone():
-                    continue
-                public_token = candidate
-                break
-            else:
-                raise HTTPException(
-                    status_code=500, detail="Could not allocate a unique public token."
-                )
+    insert_state: dict[str, Any] = {}
 
+    def intake_insert_work(conn: Any, cur: Any) -> None:
+        public_token_local = ""
+        for _ in range(40):
+            candidate = generate_public_token()
             cur.execute(
-                """
-                INSERT INTO intakes (
-                    source, answers, answers_json, public_token, entry_intent, source_page, designer_status
-                )
-                VALUES (
-                    'intake', %(answers)s::jsonb, %(answers_json)s::jsonb, %(public_token)s, %(entry_intent)s, %(source_page)s, 'submitted'
-                )
-                RETURNING id;
-                """,
-                {
-                    **payload,
-                    "answers": json.dumps(payload["answers"]),
-                    "answers_json": json.dumps(answers_payload),
-                    "public_token": public_token,
-                    "entry_intent": entry_intent_val,
-                    "source_page": source_page_val,
-                },
+                "SELECT 1 FROM intakes WHERE public_token = %s LIMIT 1;",
+                (candidate,),
             )
-            row = cur.fetchone()
-            intake_id = row["id"]
-            cur.execute(
-                "UPDATE intakes SET ref_code = %s WHERE id = %s AND (ref_code IS NULL OR TRIM(ref_code) = '');",
-                (f"NG-{intake_id}", intake_id),
+            if cur.fetchone():
+                continue
+            public_token_local = candidate
+            break
+        else:
+            raise HTTPException(
+                status_code=500, detail="Could not allocate a unique public token."
             )
-        conn.commit()
+
+        cur.execute(
+            """
+            INSERT INTO intakes (
+                source, answers, answers_json, public_token, entry_intent, source_page, designer_status
+            )
+            VALUES (
+                'intake', %(answers)s::jsonb, %(answers_json)s::jsonb, %(public_token)s, %(entry_intent)s, %(source_page)s, 'submitted'
+            )
+            RETURNING id;
+            """,
+            {
+                **payload,
+                "answers": json.dumps(payload["answers"]),
+                "answers_json": json.dumps(answers_payload),
+                "public_token": public_token_local,
+                "entry_intent": entry_intent_val,
+                "source_page": source_page_val,
+            },
+        )
+        row = cur.fetchone()
+        intake_id_local = row["id"]
+        cur.execute(
+            "UPDATE intakes SET ref_code = %s WHERE id = %s AND (ref_code IS NULL OR TRIM(ref_code) = '');",
+            (f"NG-{intake_id_local}", intake_id_local),
+        )
+        insert_state["public_token"] = public_token_local
+        insert_state["intake_id"] = intake_id_local
+
+    execute_with_auto_init(intake_insert_work, "intake_submit.insert")
+    public_token = str(insert_state["public_token"])
+    intake_id = int(insert_state["intake_id"])
 
     try:
         add_lead_event(
@@ -1428,23 +1495,24 @@ async def intake_submit(request: Request) -> dict[str, Any]:
         client_sent = False
 
     if admin_sent or client_sent:
-        with pool.connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE intakes
-                    SET
-                      admin_email_sent_at = CASE WHEN %(admin_sent)s THEN NOW() ELSE admin_email_sent_at END,
-                      client_email_sent_at = CASE WHEN %(client_sent)s THEN NOW() ELSE client_email_sent_at END
-                    WHERE id = %(intake_id)s
-                    """,
-                    {
-                        "admin_sent": admin_sent,
-                        "client_sent": client_sent,
-                        "intake_id": intake_id,
-                    },
-                )
-            conn.commit()
+
+        def intake_email_flags_work(conn: Any, cur: Any) -> None:
+            cur.execute(
+                """
+                UPDATE intakes
+                SET
+                  admin_email_sent_at = CASE WHEN %(admin_sent)s THEN NOW() ELSE admin_email_sent_at END,
+                  client_email_sent_at = CASE WHEN %(client_sent)s THEN NOW() ELSE client_email_sent_at END
+                WHERE id = %(intake_id)s
+                """,
+                {
+                    "admin_sent": admin_sent,
+                    "client_sent": client_sent,
+                    "intake_id": intake_id,
+                },
+            )
+
+        execute_with_auto_init(intake_email_flags_work, "intake_submit.email_flags")
 
     return {
         "ok": True,
@@ -1515,39 +1583,44 @@ async def contact_submit(
     if uploaded_urls:
         answers["attachments"] = uploaded_urls
 
-    pool = get_pool()
-    public_token = ""
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            for _ in range(40):
-                candidate = generate_public_token()
-                cur.execute("SELECT 1 FROM intakes WHERE public_token = %s LIMIT 1;", (candidate,))
-                if cur.fetchone():
-                    continue
-                public_token = candidate
-                break
-            else:
-                raise HTTPException(status_code=500, detail="Could not allocate a unique public token.")
-            cur.execute(
-                """
-                INSERT INTO intakes (source, answers, answers_json, public_token, designer_status)
-                VALUES ('contact', %(answers)s::jsonb, %(answers_json)s::jsonb, %(public_token)s, %(designer_status)s)
-                RETURNING id;
-                """,
-                {
-                    "answers": json.dumps(answers),
-                    "answers_json": json.dumps({"schema_version": 2, "answers": answers}),
-                    "public_token": public_token,
-                    "designer_status": DESIGNER_STATUS_NEW,
-                },
-            )
-            row = cur.fetchone()
-            lead_id = row["id"]
-            cur.execute(
-                "UPDATE intakes SET ref_code = %s WHERE id = %s AND (ref_code IS NULL OR TRIM(ref_code) = '');",
-                (f"NG-{lead_id}", lead_id),
-            )
-        conn.commit()
+    contact_insert_state: dict[str, Any] = {}
+
+    def contact_insert_work(conn: Any, cur: Any) -> None:
+        public_token_local = ""
+        for _ in range(40):
+            candidate = generate_public_token()
+            cur.execute("SELECT 1 FROM intakes WHERE public_token = %s LIMIT 1;", (candidate,))
+            if cur.fetchone():
+                continue
+            public_token_local = candidate
+            break
+        else:
+            raise HTTPException(status_code=500, detail="Could not allocate a unique public token.")
+        cur.execute(
+            """
+            INSERT INTO intakes (source, answers, answers_json, public_token, designer_status)
+            VALUES ('contact', %(answers)s::jsonb, %(answers_json)s::jsonb, %(public_token)s, %(designer_status)s)
+            RETURNING id;
+            """,
+            {
+                "answers": json.dumps(answers),
+                "answers_json": json.dumps({"schema_version": 2, "answers": answers}),
+                "public_token": public_token_local,
+                "designer_status": DESIGNER_STATUS_NEW,
+            },
+        )
+        row = cur.fetchone()
+        lead_id_local = row["id"]
+        cur.execute(
+            "UPDATE intakes SET ref_code = %s WHERE id = %s AND (ref_code IS NULL OR TRIM(ref_code) = '');",
+            (f"NG-{lead_id_local}", lead_id_local),
+        )
+        contact_insert_state["public_token"] = public_token_local
+        contact_insert_state["lead_id"] = lead_id_local
+
+    execute_with_auto_init(contact_insert_work, "contact_submit.insert")
+    public_token = str(contact_insert_state["public_token"])
+    lead_id = int(contact_insert_state["lead_id"])
 
     try:
         add_lead_event(
@@ -1571,23 +1644,24 @@ async def contact_submit(
         client_sent = False
 
     if admin_sent or client_sent:
-        with pool.connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE intakes
-                    SET
-                      admin_email_sent_at = CASE WHEN %(admin_sent)s THEN NOW() ELSE admin_email_sent_at END,
-                      client_email_sent_at = CASE WHEN %(client_sent)s THEN NOW() ELSE client_email_sent_at END
-                    WHERE id = %(lead_id)s
-                    """,
-                    {
-                        "admin_sent": admin_sent,
-                        "client_sent": client_sent,
-                        "lead_id": lead_id,
-                    },
-                )
-            conn.commit()
+
+        def contact_email_flags_work(conn: Any, cur: Any) -> None:
+            cur.execute(
+                """
+                UPDATE intakes
+                SET
+                  admin_email_sent_at = CASE WHEN %(admin_sent)s THEN NOW() ELSE admin_email_sent_at END,
+                  client_email_sent_at = CASE WHEN %(client_sent)s THEN NOW() ELSE client_email_sent_at END
+                WHERE id = %(lead_id)s
+                """,
+                {
+                    "admin_sent": admin_sent,
+                    "client_sent": client_sent,
+                    "lead_id": lead_id,
+                },
+            )
+
+        execute_with_auto_init(contact_email_flags_work, "contact_submit.email_flags")
 
     return {
         "ok": True,
@@ -1924,20 +1998,30 @@ def admin_root_redirect() -> RedirectResponse:
     return RedirectResponse(url="/admin/leads", status_code=302)
 
 
+@app.post("/admin/init-db")
+def admin_init_db() -> dict[str, Any]:
+    """Manual schema recovery. TODO: require admin authentication before production use."""
+    ts = datetime.utcnow().isoformat() + "Z"
+    logger.info("POST /admin/init-db invoked at %s", ts)
+    init_db()
+    return {"ok": True, "message": "Database initialized"}
+
+
 @app.get("/admin/leads", response_class=HTMLResponse)
 def admin_leads() -> str:
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id, ref_code, source, submitted_at, designer_status, answers, answers_json
-                FROM intakes
-                ORDER BY submitted_at DESC
-                LIMIT 500;
-                """
-            )
-            rows = cur.fetchall()
+
+    def work(conn: Any, cur: Any) -> list[dict[str, Any]]:
+        cur.execute(
+            """
+            SELECT id, ref_code, source, submitted_at, designer_status, answers, answers_json
+            FROM intakes
+            ORDER BY submitted_at DESC
+            LIMIT 500;
+            """
+        )
+        return cur.fetchall()
+
+    rows = execute_with_auto_init(work, "admin_leads")
     return _render_admin_leads_page(rows)
 
 
@@ -1970,14 +2054,14 @@ def admin_update_lead_notes(lead_id: int, payload: AdminNotesPayload) -> dict[st
     if not row:
         raise HTTPException(status_code=404, detail="Lead not found.")
     notes = (payload.notes or "").strip()
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "UPDATE intakes SET designer_notes = %s WHERE id = %s;",
-                (notes, lead_id),
-            )
-        conn.commit()
+
+    def notes_work(conn: Any, cur: Any) -> None:
+        cur.execute(
+            "UPDATE intakes SET designer_notes = %s WHERE id = %s;",
+            (notes, lead_id),
+        )
+
+    execute_with_auto_init(notes_work, "admin_update_lead_notes")
     add_lead_event(lead_id, "designer_notes_updated", {"notes_length": len(notes)})
     return {"ok": True, "lead_id": lead_id, "designer_notes": notes}
 
@@ -2020,18 +2104,17 @@ async def admin_upload_lead_photo(lead_id: int, file: UploadFile = File(...)) ->
     if not url.startswith("http"):
         raise HTTPException(status_code=502, detail="Photo upload did not return a URL.")
 
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                UPDATE intakes
-                SET admin_photos = COALESCE(admin_photos, '[]'::jsonb) || jsonb_build_array(%s::text)
-                WHERE id = %s;
-                """,
-                (url, lead_id),
-            )
-        conn.commit()
+    def photo_work(conn: Any, cur: Any) -> None:
+        cur.execute(
+            """
+            UPDATE intakes
+            SET admin_photos = COALESCE(admin_photos, '[]'::jsonb) || jsonb_build_array(%s::text)
+            WHERE id = %s;
+            """,
+            (url, lead_id),
+        )
+
+    execute_with_auto_init(photo_work, "admin_upload_lead_photo")
 
     add_lead_event(lead_id, "admin_photo_added", {"url": url})
     return {"ok": True, "lead_id": lead_id, "url": url}
@@ -2087,19 +2170,20 @@ def conversion_exists_for_stripe_session(stripe_session_id: str | None) -> bool:
     sid = (stripe_session_id or "").strip()
     if not sid:
         return False
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT 1
-                FROM intake_conversions
-                WHERE stripe_session_id = %s
-                LIMIT 1;
-                """,
-                (sid,),
-            )
-            return cur.fetchone() is not None
+
+    def work(conn: Any, cur: Any) -> bool:
+        cur.execute(
+            """
+            SELECT 1
+            FROM intake_conversions
+            WHERE stripe_session_id = %s
+            LIMIT 1;
+            """,
+            (sid,),
+        )
+        return cur.fetchone() is not None
+
+    return execute_with_auto_init(work, "conversion_exists_for_stripe_session")
 
 
 def _send_stripe_payment_confirmation_emails(
