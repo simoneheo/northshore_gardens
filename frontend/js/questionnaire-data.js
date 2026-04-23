@@ -7,7 +7,7 @@ window.QUESTIONNAIRE_CONFIG = {
         "type": "text",
         "label": "Step 1",
         "title": "What is your name?",
-        "hint": "We never send spam or share your information.",
+        "hint": "We never send spam or share your information. And you can submit our questionnaire without checkout or commitment.",
         "required": true,
         "placeholder": "First and last name"
       },
