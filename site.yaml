@@ -1,11 +1,12 @@
 hero:
-  eyebrow: Thinking about your yard?
-  title: A better yard starts with a few photos
-  subtext: Answer quick questions about what you're thinking. We'll share initial ideas tailored to your vision.
+  eyebrow: Spring is in the air.
+  title: Get fresh ideas for your yard. 
+  subtext: Tell us what you're thinking about. We'll share ideas tailored to your space and vision.
   cta:
-    primary: Free Consult
+    primary: Get Ideas
     secondary: View Examples
     tertiary: Packages
+    microcopy: Free to start. Try our questionnaire and see what we can do for you.
   points:
     - Flat-fee 
     - Local
@@ -33,7 +34,7 @@ how_it_works:
   intro: Work directly with a designer from the get-go. We keep it personal and low-pressure.
   steps:
     - title: Share your yard
-      body: Answer a few questions about your yard and what you have in mind. 
+      body: Tell us about your yard and what you have in mind. 
     - title: Get ideas 
       body: We review your space and reply with initial concepts. 
     - title: Move forward
@@ -56,7 +57,7 @@ why_this_is_different:
       body: Designed to be built, with Midwest conditions and local guidelines in mind.
 
     - title: Personal touch
-      body: Work directly with a designer who responds with ideas tailored to your goals.
+      body: A designer works with you from first idea to final plan.
 
     - title: Fast turnaround
       body: Receive a detailed professional plan in under 7 days, ready to build.
@@ -64,7 +65,7 @@ why_this_is_different:
 # Package prices: edit pricing.json at repo root, then run python3 build_site.py (Stripe uses the same file).
 packages:
   eyebrow: Packages
-  title: Every design is by a local designer. 
+  title: Work directly with a designer from start to finish.
   intro: Start with a free consultation. Choose a plan when you're ready to move forward.
   cta: Get Consultation
   signature:
@@ -73,14 +74,12 @@ packages:
     subtitle: A complete, build-ready plan for your yard.
     items:
       - Custom design tailored to your home
-      - Top-view layout with plant names
-      - Plant quantities and specifications
-      - Plant sheet with bloom season, color palette, and sun info
+      - Professional top-view layout 
+      - Detailed plant specifications
       - Delivered within 7 days
       - "Optional: coordination with a trusted contractor"
-    note: Everything for contractors or DIYers.
   premium:
-    label: For more guidance
+    label: For more guidance and flexibility
     title: Premium Plan
     subtitle: Everything in Signature, with added support.
     items:
@@ -90,7 +89,7 @@ packages:
       - Installation guidelines
       - Phasing suggestions
       - Nursery budget sheet
-    note: Best for more flexibility or building in phases.
+    note: Best for DIYers or building in phases.
 
 navigation:
   links:

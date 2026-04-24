@@ -145,7 +145,7 @@ window.SITE_DATA = {
   "howItWorksTitle": "Simple from start to finish.",
   "howItWorksIntro": "Work directly with a designer from the get-go. We keep it personal and low-pressure.",
   "step1Title": "Share your yard",
-  "step1Body": "Answer a few questions about your yard and what you have in mind.",
+  "step1Body": "Tell us about your yard and what you have in mind.",
   "step2Title": "Get ideas",
   "step2Body": "We review your space and reply with initial concepts.",
   "step3Title": "Move forward",
