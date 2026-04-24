@@ -3,14 +3,13 @@ hero:
   title: A better yard starts with a few photos
   subtext: Answer quick questions about what you're thinking. We'll share initial ideas tailored to your vision.
   cta:
-    primary: Get Started
+    primary: Free Consult
     secondary: View Examples
     tertiary: Packages
-    microcopy: Free to start. Upgrade to a professional plan anytime.
   points:
-    - Flat-fee design
-    - Locally based
-    - <7days delivery
+    - Flat-fee 
+    - Local
+    - Fast turnaround
 
 contact:
   title: Tell us what you're thinking about.
@@ -25,8 +24,8 @@ contact:
     title: Thank you! We'll get back to you as soon as possible.
 
 gallery:
-  title: Front yard design concepts
-  intro: Planned for practical installation, shaped by Northshore homes
+  title: Front yard designs
+  intro: Durable plantings, shaped by Northshore character
 
 how_it_works:
   eyebrow: How It Works
