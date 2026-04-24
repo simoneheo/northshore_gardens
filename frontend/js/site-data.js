@@ -197,6 +197,6 @@ window.SITE_DATA = {
   "contactAttachmentLabel": "Add a photo (optional)",
   "contactSubmitButton": "Send Message",
   "contactSuccessTitle": "Thank you! We'll get back to you as soon as possible.",
-  "package1Price": "$00.50",
-  "package2Price": "$00.50"
+  "package1Price": "$199",
+  "package2Price": "$399"
 };

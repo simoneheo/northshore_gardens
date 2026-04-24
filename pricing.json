@@ -1,12 +1,12 @@
 {
   "signature_plan": {
     "product_name": "Signature Plan",
-    "display": "$00.50",
-    "amount_cents": 50
+    "display": "$199",
+    "amount_cents": 19900
   },
   "premium_plan": {
     "product_name": "Premium Plan",
-    "display": "$00.50",
-    "amount_cents": 50
+    "display": "$399",
+    "amount_cents": 39900
   }
 }
