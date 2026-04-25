@@ -10,7 +10,7 @@ window.SITE_DATA = {
   "footerTagline": "Landscape Design - Northbrook, Illinois",
   "heroEyebrow": "Spring is in the air.",
   "heroTitle": "Get fresh ideas for your yard.",
-  "heroSubtext": "Tell us what you're thinking about. We'll share ideas tailored to your space and vision.",
+  "heroSubtext": "Tell us what you're thinking about. We'll share ideas tailored to your space and vision. Upgrade to a professional plan if you want to continue.",
   "heroPrimaryCta": "Get Ideas",
   "heroSecondaryCta": "View Examples",
   "heroTertiaryCta": "Packages",

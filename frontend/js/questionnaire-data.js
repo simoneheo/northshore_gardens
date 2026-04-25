@@ -3,18 +3,9 @@ window.QUESTIONNAIRE_CONFIG = {
     "version": 1,
     "steps": [
       {
-        "key": "name",
-        "type": "text",
-        "label": "Step 1",
-        "title": "What is your name?",
-        "hint": "We never send spam or share your information. And you can submit our questionnaire without checkout or commitment.",
-        "required": true,
-        "placeholder": "First and last name"
-      },
-      {
         "key": "yardGoal",
         "type": "textarea",
-        "label": "Step 2",
+        "label": "Step 1",
         "title": "What are you hoping to improve?",
         "hint": "A sentence or two is perfect",
         "required": false,
@@ -23,7 +14,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "sunExposure",
         "type": "textarea",
-        "label": "Step 3",
+        "label": "Step 2",
         "title": "Do you know how much sun your yard gets?",
         "required": false,
         "placeholder": "Full sun, partial shade, filtered under canopy, not sure"
@@ -31,7 +22,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "nurseryBudget",
         "type": "textarea",
-        "label": "Step 4",
+        "label": "Step 3",
         "title": "Do you have a rough plant budget in mind?",
         "hint": "We will design within your nursery budget.",
         "required": false,
@@ -40,7 +31,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "stylePreference",
         "type": "textarea",
-        "label": "Step 5",
+        "label": "Step 4",
         "title": "What kind of look do you like?",
         "required": false,
         "placeholder": "Low maintenance, cut flower garden, natural look, not sure"
@@ -48,7 +39,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "mustKeep",
         "type": "textarea",
-        "label": "Step 6",
+        "label": "Step 5",
         "title": "Anything we should work around or keep?",
         "required": false,
         "placeholder": "Existing plants, trees, rabbits, HOA rules, not sure yet"
@@ -56,7 +47,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "yardNotes",
         "type": "textarea",
-        "label": "Step 7",
+        "label": "Step 6",
         "title": "Tell us more about your yard or goals.",
         "required": false,
         "placeholder": "Anything else you want to share or inspiration links (optional)"
@@ -64,7 +55,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "photos",
         "type": "upload",
-        "label": "Step 8",
+        "label": "Step 7",
         "title": "Upload photos of your yard (optional).",
         "hint": "You can skip this and reply to a follow-up email with more photos.",
         "required": false
@@ -72,7 +63,7 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "address",
         "type": "text",
-        "label": "Step 9",
+        "label": "Step 8",
         "title": "What is your address? (optional)",
         "hint": "If easier, just include city and street.",
         "required": false,
@@ -81,11 +72,20 @@ window.QUESTIONNAIRE_CONFIG = {
       {
         "key": "email",
         "type": "email",
-        "label": "Step 10",
+        "label": "Step 9",
         "title": "What is your email?",
         "hint": "We'll send a follow-up email. No spam.",
         "required": true,
         "placeholder": "you@example.com"
+      },
+      {
+        "key": "name",
+        "type": "text",
+        "label": "Step 10",
+        "title": "What is your name?",
+        "hint": "We never send spam or share your information. And you can submit our questionnaire without checkout or commitment.",
+        "required": true,
+        "placeholder": "First and last name"
       }
     ]
   }
